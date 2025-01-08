@@ -277,8 +277,8 @@ class NCHL(nn.Module):
 
 
 # print structure of the network
-fka = NCHL([4, 4, 2])
-for layer in fka.neurons:
-    print(f"[Layer {fka.neurons.index(layer)}]")
-    for neuron in layer:
-        print(neuron)
+# fka = NCHL([4, 4, 2])
+# for layer in fka.neurons:
+#     print(f"[Layer {fka.neurons.index(layer)}]")
+#     for neuron in layer:
+#         print(neuron)
