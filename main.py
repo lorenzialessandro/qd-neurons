@@ -29,44 +29,49 @@ Steps:
     5. based on the information, update the pyribs archive 
 '''
 
-def generate_teams(population, n_neurons_per_team=10, n_teams=10):
-    """Generate teams ensuring each neuron appears in exactly n_teams teams"""
-    n_total = len(population)
-    teams = [[] for _ in range(n_teams * (n_total // n_neurons_per_team))]
+def generate_teams(population, n_neurons_per_team=10, n_shuffles=10):
+    all_teams = []
     
-    for neuron_idx, neuron in enumerate(population):
-        # Calculate which teams this neuron should be in
-        team_indices = [(neuron_idx + i) % len(teams) for i in range(n_teams)]
-        for team_idx in team_indices:
-            teams[team_idx].append(neuron)
-            
-    # Filter out incomplete teams
-    return [team for team in teams if len(team) == n_neurons_per_team]
+    for _ in range(n_shuffles):
+        shuffled_pop = population.copy() # shuffle the population
+        random.shuffle(shuffled_pop)
+        # divide the population in teams
+        n_teams = len(shuffled_pop) // n_neurons_per_team
+        for i in range(n_teams):
+            start_idx = i * n_neurons_per_team
+            end_idx = start_idx + n_neurons_per_team
+            team = shuffled_pop[start_idx:end_idx]
+            all_teams.append(team)
+    
+    return all_teams
         
+def evaluate_team(network, n_episodes=5, render=False):
+    """ 
+    Evaluate the network with CartPole problem and calculate the fitness (reward)
+    """
+    env = gym.make('CartPole-v1', render_mode='human' if render else None)
+    test_rewards = []
+    
+    for _ in range(n_episodes):
+        state, _ = env.reset()
+        done = False
+        truncated = False
+        episode_reward = 0
         
-def evaluate_team(agent, n_steps=1):
-    """ Evaluate the network with CartPole problem and calculate the fitness (reward) """
-    env = gym.make('CartPole-v1')
-    
-    state, _ = env.reset()
-    done = False
-    truncated = False
-    total_reward = 0
-    
-    for _ in range(n_steps):
         while not (done or truncated):
             input = torch.tensor(state).double()
+            output = network.forward(input)
+            action = np.argmax(output.tolist())
             
-            output = agent.forward(input)
+            state, reward, done, truncated, _ = env.step(action)
+            episode_reward += reward
             
-            action = np.clip(np.argmax(output.tolist()), 0, env.action_space.n - 1)
-            state, rew, done, truncated,  _ = env.step(action)
-            
-            total_reward += rew
-            
-            agent.update_weights()
-                
-    return total_reward
+            network.update_weights() # update the weights
+        
+        test_rewards.append(episode_reward)
+    
+    env.close()
+    return np.mean(test_rewards)
 
     
 class Optimizer:
@@ -76,18 +81,17 @@ class Optimizer:
         self.archive = GridArchive(
             solution_dim=5,     # 5 parameters for each neuron
             dims=[20, 20],
-            ranges=[(-3, 3),    
-                (-1, 1)] 
+            ranges=[(0.0, 3.5), (0.0, 2.0)],
         )
         
         # create the emitter
-        self.emitter = GaussianEmitter(
+        self.emitter = EvolutionStrategyEmitter(
             archive=self.archive,
-            sigma=0.3,
-            x0=np.zeros(5),
-            batch_size=sum(self.nodes) # as population size
+            sigma0=0.2,          
+            batch_size=100,
+            x0=np.zeros(5)
         )
-        
+                
         # create the scheduler
         self.scheduler = Scheduler(emitters=[self.emitter], archive=self.archive)
     
@@ -111,12 +115,17 @@ class Optimizer:
         # evaluate teams
         for team in teams:
             network = NCHL(nodes=self.nodes, population=team)
-            fitness = evaluate_team(network, n_steps=20)
+            fitness = evaluate_team(network)
             
             # store descriptors of each neuron in the network
             for neuron in network.all_neurons:
                 d1, d2 = neuron.compute_descriptors()
                 data[neuron.id].append((d1, d2, fitness))
+                
+        if DEBUG:
+            # print descriptors
+            for neuron, descriptors in data.items():
+                print(f'Neuron {neuron} - Min and Max Entropy: {min([d[0] for d in descriptors]), max([d[0] for d in descriptors])} - Min and Max Weight Changes: {min([d[1] for d in descriptors]), max([d[1] for d in descriptors])}')
         
         # aggregate data
         aggregated_data = defaultdict(list)
@@ -124,9 +133,9 @@ class Optimizer:
             avg_entropy = np.mean([d[0] for d in descriptors])
             avg_weight_changes = np.mean([d[1] for d in descriptors])
             avg_fitness = np.mean([d[2] for d in descriptors])
-            fit_percentile = np.percentile([d[2] for d in descriptors], 70) # 70th percentile of fitness
+            pct_fitness = np.percentile([d[2] for d in descriptors], 70) # 70th percentile of fitness
                         
-            aggregated_data[neuron] = (avg_entropy, avg_weight_changes, fit_percentile)
+            aggregated_data[neuron] = (avg_entropy, avg_weight_changes, avg_fitness)
     
         # update the archive
         objectives = []
@@ -142,20 +151,20 @@ class Optimizer:
         
         return self.archive.stats.obj_max
         
+        
+DEBUG = True
+        
 if __name__ == '__main__':
     optimizer = Optimizer([4, 4, 2])
     history = []
-    for i in tqdm(range(100)):
+    for i in tqdm(range(10)):
         obj_max = optimizer.run_evolution()
-        # print(f'Itr {i} - Max fitness: {obj_max}')
+        if DEBUG: print(f'Itr {i} - Max fitness: {obj_max}')
         history.append(obj_max)
         
     print(history)
         
-    # Plot heatmap for archive
-    plt.figure(figsize=(10, 6))
-    grid_archive_heatmap(optimizer.archive, cmap="viridis")
-    plt.title("Archive Heatmap")
+    grid_archive_heatmap(optimizer.archive) # plot the archive heatmap
     plt.show()
     
     # plot the training history
@@ -165,5 +174,3 @@ if __name__ == '__main__':
     plt.xlabel('Iteration')
     plt.ylabel('Max Fitness')
     plt.show()
-    
-    
