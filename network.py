@@ -5,17 +5,15 @@ import torch.nn as nn
 class Neuron:
     def __init__(self, neuron_id: int, device="cpu"):
         self.id = neuron_id
-        self.device = torch.device(device)
+        self.device = device  # Store device string instead of torch.device
         
-        # Hebbian rule parameters initialized to zero
-        self.pre_factor = torch.tensor(0.0).to(device)
-        self.post_factor = torch.tensor(0.0).to(device)
-        self.correlation = torch.tensor(0.0).to(device)
-        self.decorrelation = torch.tensor(0.0).to(device)
-        self.eta = torch.tensor(0.0).to(device)
-        
-        # Current activation value
-        self.activation = torch.tensor(0.0).to(device)
+        # Initialize all tensors on the specified device
+        self.pre_factor = torch.tensor(0.0, device=device)
+        self.post_factor = torch.tensor(0.0, device=device)
+        self.correlation = torch.tensor(0.0, device=device)
+        self.decorrelation = torch.tensor(0.0, device=device)
+        self.eta = torch.tensor(0.0, device=device)
+        self.activation = torch.tensor(0.0, device=device)
         
         # Store activations and weight changes for the neuron for descriptors
         self.activations = []
@@ -31,14 +29,14 @@ class Neuron:
         
     def set_hebbian_params(self, pre: float, post: float, corr: float, decorr: float):
         """Set the Hebbian learning parameters for this neuron."""
-        self.pre_factor = torch.tensor(pre).to(self.device)
-        self.post_factor = torch.tensor(post).to(self.device)
-        self.correlation = torch.tensor(corr).to(self.device)
-        self.decorrelation = torch.tensor(decorr).to(self.device)
+        self.pre_factor = torch.tensor(pre, device=self.device)
+        self.post_factor = torch.tensor(post, device=self.device)
+        self.correlation = torch.tensor(corr, device=self.device)
+        self.decorrelation = torch.tensor(decorr, device=self.device)
 
     def set_eta(self, eta: float):
         """Set the learning rate for this neuron."""
-        self.eta = torch.tensor(eta).to(self.device)
+        self.eta = torch.tensor(eta, device=self.device)
 
     def set_activation(self, activation):
         """Set the current activation value of the neuron."""
@@ -48,10 +46,10 @@ class Neuron:
     def get_hebbian_terms(self):
         """Get the Hebbian terms for weight updates."""
         return (
-            self.pre_factor * self.activation,
-            self.post_factor * self.activation,
-            1. if self.correlation == 1. else self.correlation * self.activation,
-            self.decorrelation
+            (self.pre_factor * self.activation).to(self.device),
+            (self.post_factor * self.activation).to(self.device),
+            1. if self.correlation == 1. else (self.correlation * self.activation).to(self.device),
+            self.decorrelation.to(self.device)
         )
 
     def compute_descriptors(self):
@@ -59,8 +57,8 @@ class Neuron:
         if not self.activations:
             return 0.0, 0.0
             
-        # Compute on GPU if available
-        activations_tensor = torch.tensor(self.activations).to(self.device)
+        # Compute on specified device
+        activations_tensor = torch.tensor(self.activations, device=self.device)
         
         # Descriptor 1: Average entropy of the activations
         hist = torch.histc(activations_tensor, bins=10, min=-1.0, max=1.0) # [-1, 1] because of tanh
@@ -71,8 +69,8 @@ class Neuron:
         
         # Descriptor 2: Average absolute weight change 
         if self.weight_changes:
-            weight_changes_tensor = torch.tensor(self.weight_changes).to(self.device)
-            avg_weight_change = torch.mean(torch.abs(weight_changes_tensor)).item() # Average absolute weight change
+            weight_changes_tensor = torch.tensor(self.weight_changes, device=self.device)
+            avg_weight_change = torch.mean(torch.abs(weight_changes_tensor)).item()
         else:
             avg_weight_change = 0.0
         
@@ -81,19 +79,19 @@ class Neuron:
 class NCHL(nn.Module):
     def __init__(self, nodes: list, params=None, population=None, grad=False, device="cpu", init=None):
         super(NCHL, self).__init__()
-        self.device = torch.device(device)
+        self.device = device  # Store device string
         self.grad = grad
-        self.nodes = torch.tensor(nodes).to(self.device)
+        self.nodes = torch.tensor(nodes, device=device)
         self.nweights = sum([self.nodes[i] * self.nodes[i + 1] for i in range(len(self.nodes) - 1)])
         
-        # Initialize neurons
+        # Initialize network components
         self.all_neurons = []
         self.neurons = self._initialize_neurons(nodes, population, device)
-        
-        # Create network layers
         self.network = self._initialize_network(nodes, init)
         
         self.double()
+        self.to(device)  # Move the entire network to the specified device
+        
         self.nparams = sum(self.nodes) * 5 - self.nodes[0] - self.nodes[-1]
         
         if params is not None:
@@ -140,6 +138,7 @@ class NCHL(nn.Module):
                 self._initialize_weights(layer, init)
                 
             layer.weight.data = layer.weight.data.double()
+            layer.to(self.device)  # Move layer to correct device
             network.append(layer)
         return network
 
@@ -161,15 +160,16 @@ class NCHL(nn.Module):
 
     def forward(self, inputs):
         with torch.no_grad():
+            # Ensure input is on the correct device
             x = inputs.to(self.device)
             if x.dim() == 1:
                 x = x.unsqueeze(0)
             
-            # Set input layer activations (using first item in batch)
+            # Set input layer activations
             for i, neuron in enumerate(self.neurons[0]):
                 neuron.set_activation(x[0, i])
             
-            # Forward pass through the network
+            # Forward pass
             for layer_idx, layer in enumerate(self.network):
                 x = torch.tanh(layer(x))
                 # Set activations for neurons in current layer
@@ -179,60 +179,59 @@ class NCHL(nn.Module):
 
     def update_weights(self):
         weights = self.get_weights()
-        num_layers = len(weights)
-
-        for layer_idx in range(num_layers):
+        
+        for layer_idx in range(len(weights)):
             pre_neurons = self.neurons[layer_idx]
             post_neurons = self.neurons[layer_idx + 1]
             
-            # Pre-compute all Hebbian terms for the layer
-            pre_terms = torch.stack([torch.stack(n.get_hebbian_terms()) for n in pre_neurons])
-            post_terms = torch.stack([torch.stack(n.get_hebbian_terms()) for n in post_neurons])
+            # Ensure all tensors are on the same device
+            pre_terms = torch.stack([torch.stack(n.get_hebbian_terms()).to(self.device) for n in pre_neurons])
+            post_terms = torch.stack([torch.stack(n.get_hebbian_terms()).to(self.device) for n in post_neurons])
             
-            # Prepare tensors for vectorized computation
-            pre_activations = torch.stack([n.activation for n in pre_neurons])
-            post_activations = torch.stack([n.activation for n in post_neurons])
+            # Ensure activations are on the correct device
+            pre_activations = torch.stack([n.activation.to(self.device) for n in pre_neurons])
+            post_activations = torch.stack([n.activation.to(self.device) for n in post_neurons])
             
-            # Create weight update matrix using vectorized operations
-            pre_contribution = pre_terms[:, 0].unsqueeze(0).expand(len(post_neurons), -1)
-            post_contribution = post_terms[:, 1].unsqueeze(1).expand(-1, len(pre_neurons))
+            # Create weight update matrix - ensure device consistency
+            pre_contribution = pre_terms[:, 0].unsqueeze(0).expand(len(post_neurons), -1).to(self.device)
+            post_contribution = post_terms[:, 1].unsqueeze(1).expand(-1, len(pre_neurons)).to(self.device)
             
-            # Correlation terms
-            corr_mask = (pre_terms[:, 2] != 1.).unsqueeze(0) & (post_terms[:, 2] != 1.).unsqueeze(1)
+            # Correlation terms - ensure device consistency
+            corr_mask = ((pre_terms[:, 2] != 1.).unsqueeze(0) & (post_terms[:, 2] != 1.).unsqueeze(1)).to(self.device)
             corr_contrib = torch.where(
                 corr_mask,
-                pre_terms[:, 2].unsqueeze(0) * post_terms[:, 2].unsqueeze(1),
-                torch.zeros_like(pre_contribution)
+                pre_terms[:, 2].unsqueeze(0).to(self.device) * post_terms[:, 2].unsqueeze(1).to(self.device),
+                torch.zeros_like(pre_contribution, device=self.device)
             )
             
-            # Decorrelation terms
-            decorr_mask = (pre_terms[:, 3] != 1.).unsqueeze(0) & (post_terms[:, 3] != 1.).unsqueeze(1)
+            # Decorrelation terms - ensure device consistency
+            decorr_mask = ((pre_terms[:, 3] != 1.).unsqueeze(0) & (post_terms[:, 3] != 1.).unsqueeze(1)).to(self.device)
             decorr_contrib = torch.where(
                 decorr_mask,
-                pre_terms[:, 3].unsqueeze(0) * post_terms[:, 3].unsqueeze(1),
-                torch.zeros_like(pre_contribution)
+                pre_terms[:, 3].unsqueeze(0).to(self.device) * post_terms[:, 3].unsqueeze(1).to(self.device),
+                torch.zeros_like(pre_contribution, device=self.device)
             )
             
-            # Combine all contributions
-            dw = pre_contribution + post_contribution + corr_contrib + decorr_contrib
+            # Combine all contributions - ensure device consistency
+            dw = (pre_contribution + post_contribution + corr_contrib + decorr_contrib).to(self.device)
             
-            # Learning rates
-            pre_etas = torch.stack([n.eta for n in pre_neurons])
-            post_etas = torch.stack([n.eta for n in post_neurons])
-            eta_matrix = (pre_etas.unsqueeze(0) + post_etas.unsqueeze(1)) / 2
+            # Learning rates - ensure device consistency
+            pre_etas = torch.stack([n.eta.to(self.device) for n in pre_neurons])
+            post_etas = torch.stack([n.eta.to(self.device) for n in post_neurons])
+            eta_matrix = ((pre_etas.unsqueeze(0) + post_etas.unsqueeze(1)) / 2).to(self.device)
             
             # Final weight update
-            weight_change = eta_matrix * dw
+            weight_change = (eta_matrix * dw).to(self.device)
             
-            # Store weight changes for descriptors
+            # Store weight changes and update weights
             for i, post_neuron in enumerate(post_neurons):
                 for j, pre_neuron in enumerate(pre_neurons):
                     change = weight_change[i, j].item()
                     pre_neuron.add_weight_change(change)
                     post_neuron.add_weight_change(change)
             
-            # Update weights
-            weights[layer_idx] += weight_change
+            # Ensure weights are on the correct device before adding weight change
+            weights[layer_idx] = (weights[layer_idx].to(self.device) + weight_change).to(self.device)
 
         self.set_weights(weights)
 
@@ -242,16 +241,16 @@ class NCHL(nn.Module):
     def set_weights(self, weights):
         if isinstance(weights[0], torch.Tensor):
             for i, weight in enumerate(weights):
-                self.network[i].weight = nn.Parameter(weight, requires_grad=self.grad)
+                self.network[i].weight = nn.Parameter(weight.to(self.device), requires_grad=self.grad)
         else:
             tmp = self.get_weights()
             start = 0
             for i, l in enumerate(tmp):
                 size = l.size()[0] * l.size()[1] + start
-                params = torch.tensor(weights[start:size])
+                params = torch.tensor(weights[start:size], device=self.device)
                 start = size
                 self.network[i].weight = nn.Parameter(
-                    torch.reshape(params, (l.size()[0], l.size()[1])).to(self.device),
+                    torch.reshape(params, (l.size()[0], l.size()[1])),
                     requires_grad=self.grad
                 )
 
@@ -302,4 +301,3 @@ class NCHL(nn.Module):
                 decorr=rules[2]
             )
             start += 3
-        
