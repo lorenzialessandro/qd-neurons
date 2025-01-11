@@ -14,21 +14,6 @@ from ribs.emitters import EvolutionStrategyEmitter, GaussianEmitter
 
 from network import NCHL, Neuron
 
-'''
-Steps:
-    1. generate a initial population of n (100) neurons with random parameters (5)
-    2. generate 10 shuffle of the initial population (10 x [100 x 5]) and, for each shuffle, divide in 10 groups of 10 neurons, creating 10 teams (networks) of 10 neurons
-        - so each neuron will be in 10 teams
-    3. evaluation: for each team, create the NCHL network with its neurons
-        1. evaluate the network with CartPole problem and calculate the fitness (reward)
-        2. for each neuron, store its 2 descriptors (entropy and average weight changes)
-    4. aggregation: for each neuron, calculate the average of its descriptors among all teams
-        - average of entropy
-        - average of average weight changes
-        - 70th percentile of fitness
-    5. based on the information, update the pyribs archive 
-'''
-
 def generate_teams(population, n_neurons_per_team=10, n_shuffles=10):
     all_teams = []
     
@@ -45,12 +30,12 @@ def generate_teams(population, n_neurons_per_team=10, n_shuffles=10):
     
     return all_teams
         
-def evaluate_team(network, n_episodes=5, render=False):
+def evaluate_team(network, n_episodes=10, render=False):
     """ 
     Evaluate the network with CartPole problem and calculate the fitness (reward)
     """
     env = gym.make('CartPole-v1', render_mode='human' if render else None)
-    test_rewards = []
+    rewards = []
     
     for _ in range(n_episodes):
         state, _ = env.reset()
@@ -68,10 +53,10 @@ def evaluate_team(network, n_episodes=5, render=False):
             
             network.update_weights() # update the weights
         
-        test_rewards.append(episode_reward)
+        rewards.append(episode_reward)
     
     env.close()
-    return np.mean(test_rewards)
+    return np.mean(rewards)
 
     
 class Optimizer:
@@ -87,19 +72,19 @@ class Optimizer:
         # create the emitter
         self.emitter = EvolutionStrategyEmitter(
             archive=self.archive,
-            sigma0=0.2,          
-            batch_size=100,
-            x0=np.zeros(5)
+            sigma0=0.3,          
+            batch_size=100, # as population size
+            x0=np.random.uniform(-1, 1, 5) 
         )
                 
         # create the scheduler
         self.scheduler = Scheduler(emitters=[self.emitter], archive=self.archive)
     
     def run_evolution(self):
-        # Ask new solutions from the emitter 
+        # ask new solutions from the emitter 
         solutions = self.scheduler.ask()
         
-        # generate population
+        # generate initial population
         pop = []
         for i, sol in enumerate(solutions):
             neuron = Neuron(neuron_id=i)
@@ -130,12 +115,12 @@ class Optimizer:
         # aggregate data
         aggregated_data = defaultdict(list)
         for neuron, descriptors in data.items():
-            avg_entropy = np.mean([d[0] for d in descriptors])
-            avg_weight_changes = np.mean([d[1] for d in descriptors])
-            avg_fitness = np.mean([d[2] for d in descriptors])
-            pct_fitness = np.percentile([d[2] for d in descriptors], 70) # 70th percentile of fitness
+            avg_entropy = np.mean([d[0] for d in descriptors])              # average entropy
+            avg_weight_changes = np.mean([d[1] for d in descriptors])       # average weight changes
+            avg_fitness = np.mean([d[2] for d in descriptors])              # average fitness
+            pct_fitness = np.percentile([d[2] for d in descriptors], 70)    # 70th percentile of fitness (alternative to average)
                         
-            aggregated_data[neuron] = (avg_entropy, avg_weight_changes, avg_fitness)
+            aggregated_data[neuron] = (avg_entropy, avg_weight_changes, pct_fitness)
     
         # update the archive
         objectives = []
@@ -147,25 +132,25 @@ class Optimizer:
             objectives.append(fit)
             descriptors.append(desc)
             
-        self.scheduler.tell(objectives, descriptors)
+        self.scheduler.tell(objectives, descriptors) # update the archive
         
         return self.archive.stats.obj_max
         
         
-DEBUG = True
+DEBUG = False
         
 if __name__ == '__main__':
     optimizer = Optimizer([4, 4, 2])
     history = []
-    for i in tqdm(range(10)):
+    for i in tqdm(range(20)):
         obj_max = optimizer.run_evolution()
-        if DEBUG: print(f'Itr {i} - Max fitness: {obj_max}')
+        print(f'\nItr {i} - Max fitness: {obj_max}')
         history.append(obj_max)
-        
+
     print(history)
         
     grid_archive_heatmap(optimizer.archive) # plot the archive heatmap
-    plt.show()
+    plt.savefig('archive.png')
     
     # plot the training history
     plt.figure(figsize=(10, 6))
@@ -173,4 +158,4 @@ if __name__ == '__main__':
     plt.title('Training History')
     plt.xlabel('Iteration')
     plt.ylabel('Max Fitness')
-    plt.show()
+    plt.savefig('history.png')
