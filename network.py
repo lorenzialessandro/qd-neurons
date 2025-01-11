@@ -7,7 +7,7 @@ class Neuron:
         self.id = neuron_id
         self.device = device  
         
-         Hebbian rule parameters initialized to zero
+        # Hebbian rule parameters initialized to zero
         self.pre_factor = torch.tensor(0.0, device=device)
         self.post_factor = torch.tensor(0.0, device=device)
         self.correlation = torch.tensor(0.0, device=device)
