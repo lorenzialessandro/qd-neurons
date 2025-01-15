@@ -27,7 +27,9 @@ def generate_teams(population, n_neurons_per_team=10, n_shuffles=10):
             end_idx = start_idx + n_neurons_per_team
             team = shuffled_pop[start_idx:end_idx]
             all_teams.append(team)
-    
+    # verify each neuron is in exactly n_shuffles teams
+    for neuron in population:
+        assert len([team for team in all_teams if neuron in team]) == n_shuffles, f"Neuron {neuron.id} is in {len([team for team in all_teams if neuron in team])} teams instead of {n_shuffles}"
     return all_teams
         
 def evaluate_team(network, n_episodes=10, render=False):
@@ -72,8 +74,8 @@ class Optimizer:
         # create the emitter
         self.emitter = EvolutionStrategyEmitter(
             archive=self.archive,
-            sigma0=0.3,          
-            batch_size=100, # as population size
+            sigma0=0.1,          
+            batch_size=200, 
             x0=np.random.uniform(-1, 1, 5) 
         )
                 
@@ -100,7 +102,7 @@ class Optimizer:
         # evaluate teams
         for team in teams:
             network = NCHL(nodes=self.nodes, population=team)
-            fitness = evaluate_team(network)
+            fitness = evaluate_team(network, n_episodes=1)
             
             # store descriptors of each neuron in the network
             for neuron in network.all_neurons:
