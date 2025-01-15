@@ -3,16 +3,19 @@ import torch
 import torch.nn as nn
 
 class Neuron:
-    def __init__(self, neuron_id: int, device="cpu"):
-        self.id = neuron_id
+    def __init__(self, neuron_id: int, params=None, device="cpu"):
+        self.neuron_id = neuron_id
         self.device = device  
         
-        # Hebbian rule parameters initialized to zero
-        self.pre_factor = torch.tensor(0.0, device=device)
-        self.post_factor = torch.tensor(0.0, device=device)
-        self.correlation = torch.tensor(0.0, device=device)
-        self.decorrelation = torch.tensor(0.0, device=device)
-        self.eta = torch.tensor(0.0, device=device)
+        if params is not None:
+            self.set_params(params)
+        else:
+            # Hebbian rule parameters initialized to zero
+            self.pre_factor = torch.tensor(0.0, device=device)
+            self.post_factor = torch.tensor(0.0, device=device)
+            self.correlation = torch.tensor(0.0, device=device)
+            self.decorrelation = torch.tensor(0.0, device=device)
+            self.eta = torch.tensor(0.0, device=device)
         
         # Current activation value of the neuron
         self.activation = torch.tensor(0.0, device=device)
@@ -28,7 +31,12 @@ class Neuron:
     def add_weight_change(self, weight_change):
         """Add a weight change to the list of weight changes."""
         self.weight_changes.append(weight_change)
-        
+    
+    def set_params(self, params: list):
+        """Set the Hebbian learning parameters and learning rate for this neuron."""
+        self.set_hebbian_params(params[0], params[1], params[2], params[3])
+        self.set_eta(params[4])
+    
     def set_hebbian_params(self, pre: float, post: float, corr: float, decorr: float):
         """Set the Hebbian learning parameters for this neuron."""
         self.pre_factor = torch.tensor(pre, device=self.device)
