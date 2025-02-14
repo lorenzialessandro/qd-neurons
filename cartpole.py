@@ -6,19 +6,13 @@ from tqdm import tqdm
 from collections import defaultdict
 from collections import deque
 import gymnasium as gym
-import importlib
-import decorator
 from ribs.visualize import grid_archive_heatmap
 from ribs.archives import GridArchive
 from ribs.schedulers import Scheduler
-from ribs.emitters import EvolutionStrategyEmitter, GaussianEmitter
+from ribs.emitters import EvolutionStrategyEmitter
+from multiprocessing import Pool
 
 from network import NCHL, Neuron
-
-
-def create_initial_population(pop_size=100):
-    pop = [Neuron(neuron_id=i) for i in range(pop_size)]
-    return pop
 
 
 def create_teams(initial_pop, n_shuffle=10, team_size=10):
@@ -33,7 +27,7 @@ def create_teams(initial_pop, n_shuffle=10, team_size=10):
     return teams
 
 
-def evaluate_team(network, n_episodes=20):
+def evaluate_team(network, n_episodes=10):
     env = gym.make('CartPole-v1')
     total_reward = 0
     rewards = []
@@ -57,6 +51,7 @@ def evaluate_team(network, n_episodes=20):
         total_reward += episode_reward
         rewards.append(episode_reward)
 
+
     env.close()
     return {
         # 70th percentile of episode rewards
@@ -66,8 +61,8 @@ def evaluate_team(network, n_episodes=20):
     }
 
 
-SEED = 23
-NODES = [4, 4, 2]
+SEED = 2
+NODES = [4, 8, 2]
 
 # archive : store individual neuron solutions
 archive = GridArchive(
@@ -89,25 +84,19 @@ scheduler = Scheduler(emitters=[emitter], archive=archive)
 
 
 # Initialize tracking variables
-SOLVING_THRESHOLD = 475.0
-SOLVING_WINDOW = 100
-recent_mean_rewards = deque(maxlen=SOLVING_WINDOW)
-is_solved = False
-solving_iteration = None
-
 best_fitness = -float('inf')
 history = []
 history_best = []
 history_mean = []  # Track mean rewards separately
 
-for i in tqdm(range(200)):
+for i in tqdm(range(500)):
     sol = scheduler.ask()
     pop = [Neuron(neuron_id=i, params=sol[i]) for i in range(sum(NODES))]
-    teams = create_teams(pop)
+    teams = create_teams(pop, n_shuffle=60, team_size=sum(NODES))
 
+    # Track neuron descriptors and objectives
     objectives = defaultdict(list)
     descriptors = defaultdict(list)
-
     # Track iteration statistics
     iteration_fitnesses = []
     iteration_means = []
@@ -137,28 +126,13 @@ for i in tqdm(range(200)):
     # Update best fitness overall
     best_fitness = max(best_fitness, max(iteration_fitnesses))
 
-    # Check solving criteria
-    recent_mean_rewards.append(mean_reward_iteration)
-    if len(recent_mean_rewards) == SOLVING_WINDOW:
-        current_mean = np.mean(recent_mean_rewards)
-        if current_mean >= SOLVING_THRESHOLD and not is_solved:
-            is_solved = True
-            solving_iteration = i
-            print(f"\n🎉 Task SOLVED at iteration {i}!")
-            print(
-                f"Average reward over last {SOLVING_WINDOW} iterations: {current_mean:.2f}")
-
     if i % 10 == 0:
         print(f"\nIteration {i}")
-        print(
-            f"Average Fitness This Iteration: {np.mean(iteration_fitnesses):.2f}")
+        print(f"Average Fitness This Iteration: {np.mean(iteration_fitnesses):.2f}")
         print(f"Best Fitness This Iteration: {best_fitness_iteration:.2f}")
         print(f"Mean Reward This Iteration: {mean_reward_iteration:.2f}")
         print(f"Average Fitness Overall: {np.mean(history):.2f}")
         print(f"Best Fitness Overall: {best_fitness:.2f}")
-        if len(recent_mean_rewards) == SOLVING_WINDOW:
-            print(
-                f"Recent {SOLVING_WINDOW}-iteration Mean Reward: {np.mean(recent_mean_rewards):.2f}")
         print("\nArchive stats:")
         print(archive.stats)
 
@@ -177,17 +151,6 @@ for i in tqdm(range(200)):
 print("\nFinal Statistics:")
 print(f"Best fitness achieved: {best_fitness:.2f}")
 print(f"Final average fitness: {np.mean(history):.2f}")
-
-if is_solved:
-    print(f"Task was SOLVED at iteration {solving_iteration}")
-    print(
-        f"Final {SOLVING_WINDOW}-iteration mean reward: {np.mean(recent_mean_rewards):.2f}")
-else:
-    print("Task was NOT solved")
-    if len(recent_mean_rewards) == SOLVING_WINDOW:
-        print(
-            f"Final {SOLVING_WINDOW}-iteration mean reward: {np.mean(recent_mean_rewards):.2f}")
-
 print("\nArchive stats:")
 print(archive.stats)
 
@@ -218,17 +181,3 @@ plt.xlabel('Iteration')
 plt.ylabel('Fitness')
 plt.tight_layout()
 plt.savefig('results/cart_pole_best_fitness_history.png')
-
-# Additional plot for solving criteria tracking
-plt.figure(figsize=(10, 6))
-plt.plot(history_mean)
-plt.axhline(y=SOLVING_THRESHOLD, color='r',
-            linestyle='--', label='Solving Threshold')
-if is_solved:
-    plt.axvline(x=solving_iteration, color='g', linestyle='--', label='Solved')
-plt.title('Mean Reward History with Solving Criteria')
-plt.xlabel('Iteration')
-plt.ylabel('Mean Reward')
-plt.legend()
-plt.tight_layout()
-plt.savefig('results/cart_pole_solving_criteria.png')

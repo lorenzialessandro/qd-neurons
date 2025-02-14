@@ -71,13 +71,11 @@ class Neuron:
         activations_tensor = torch.tensor(self.activations, device=self.device)
         
         # Descriptor 1: Average entropy of the activations
-        hist = torch.histc(activations_tensor, bins=10, min=-1.0, max=1.0) # [-1, 1] because of tanh
-        # Normalize histogram to get probability distribution
-        prob = hist / torch.sum(hist) + 1e-6 
-        # Compute entropy
-        avg_entropy = -torch.sum(prob * torch.log2(prob)).item() 
+        hist = torch.histc(activations_tensor, bins=20, min=-1.0, max=1.0) 
+        prob = hist / torch.sum(hist) + 1e-6  # Keep the small epsilon for numerical stability
+        avg_entropy = -torch.sum(prob * torch.log2(prob)).item()
         
-        # Descriptor 2: Average absolute weight change 
+        # Descriptor 2: Average absolute weight change
         if self.weight_changes:
             weight_changes_tensor = torch.tensor(self.weight_changes, device=self.device)
             avg_weight_change = torch.mean(torch.abs(weight_changes_tensor)).item()
