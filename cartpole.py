@@ -61,8 +61,8 @@ def evaluate_team(network, n_episodes=10):
     }
 
 
-SEED = 2
-NODES = [4, 8, 2]
+SEED = 3
+NODES = [4, 4, 2]
 
 # archive : store individual neuron solutions
 archive = GridArchive(
@@ -75,8 +75,8 @@ archive = GridArchive(
 emitter = EvolutionStrategyEmitter(
     archive=archive,
     x0=np.random.uniform(-1, 1, 5),  # initial solution randomly generated
-    sigma0=0.2,  # initial standard deviation
-    batch_size=sum(NODES),  # number of neurons
+    sigma0=0.1,  # initial standard deviation
+    batch_size=10,  
     seed=SEED,
 )
 
@@ -92,8 +92,8 @@ history_mean = []  # Track mean rewards separately
 for i in tqdm(range(500)):
     sol = scheduler.ask()
     pop = [Neuron(neuron_id=i, params=sol[i]) for i in range(sum(NODES))]
-    teams = create_teams(pop, n_shuffle=60, team_size=sum(NODES))
-
+    teams = create_teams(pop, n_shuffle=10, team_size=sum(NODES))
+    
     # Track neuron descriptors and objectives
     objectives = defaultdict(list)
     descriptors = defaultdict(list)
