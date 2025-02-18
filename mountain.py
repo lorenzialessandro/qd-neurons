@@ -29,7 +29,7 @@ def create_teams(initial_pop, n_shuffle=10, team_size=10):
             
     return teams
 
-def evaluate_team(network, n_episodes=100):
+def evaluate_team(network, n_episodes=30):
     env = gym.make('MountainCar-v0')
     total_reward = 0
     rewards = []
@@ -91,7 +91,7 @@ history = []
 history_best = []
 max_positions = []  # Track best positions reached
 
-for i in tqdm(range(1000)):  
+for i in tqdm(range(300)):  
     sol = scheduler.ask()
     pop = [Neuron(neuron_id=i, params=sol[i]) for i in range(sum(NODES))]
     teams = create_teams(pop)
