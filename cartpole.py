@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import random
+import datetime
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from collections import defaultdict
@@ -10,7 +11,7 @@ from ribs.visualize import grid_archive_heatmap
 from ribs.archives import GridArchive
 from ribs.schedulers import Scheduler
 from ribs.emitters import EvolutionStrategyEmitter
-from multiprocessing import Pool
+
 
 from network import NCHL, Neuron
 
@@ -27,7 +28,7 @@ def create_teams(initial_pop, n_shuffle=10, team_size=10):
     return teams
 
 
-def evaluate_team(network, n_episodes=10):
+def evaluate_team(network, n_episodes=50):
     env = gym.make('CartPole-v1')
     total_reward = 0
     rewards = []
@@ -61,8 +62,11 @@ def evaluate_team(network, n_episodes=10):
     }
 
 
-SEED = 3
+# Hyperparameters
+SEED = 10
 NODES = [4, 4, 2]
+N_EPISODES = 50
+N_ITERATIONS = 2000
 
 # archive : store individual neuron solutions
 archive = GridArchive(
@@ -75,7 +79,7 @@ archive = GridArchive(
 emitter = EvolutionStrategyEmitter(
     archive=archive,
     x0=np.random.uniform(-1, 1, 5),  # initial solution randomly generated
-    sigma0=0.1,  # initial standard deviation
+    sigma0=0.2,  # initial standard deviation
     batch_size=10,  
     seed=SEED,
 )
@@ -89,7 +93,7 @@ history = []
 history_best = []
 history_mean = []  # Track mean rewards separately
 
-for i in tqdm(range(500)):
+for i in tqdm(range(N_ITERATIONS)):
     sol = scheduler.ask()
     pop = [Neuron(neuron_id=i, params=sol[i]) for i in range(sum(NODES))]
     teams = create_teams(pop, n_shuffle=10, team_size=sum(NODES))
@@ -103,7 +107,7 @@ for i in tqdm(range(500)):
 
     for team in teams:
         net = NCHL(NODES, population=team)
-        eval_results = evaluate_team(net)
+        eval_results = evaluate_team(net, n_episodes=N_EPISODES)
         # Use original metric for evolution
         fitness = eval_results['percentile_70']
         mean_reward = eval_results['mean_reward']
@@ -154,6 +158,23 @@ print(f"Final average fitness: {np.mean(history):.2f}")
 print("\nArchive stats:")
 print(archive.stats)
 
+# Log data to file 
+filename = f'log/cartpole_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}.txt'
+with open(filename, 'w') as f:
+    # log final statistics
+    f.write("Final Statistics:\n")
+    f.write(f"Best fitness achieved: {best_fitness:.2f}\n")
+    f.write(f"Final average fitness: {np.mean(history):.2f}\n")
+    f.write("\nArchive stats:\n")
+    f.write(str(archive.stats))
+    # log hyperparameters
+    f.write("\n\nHyperparameters:\n")
+    f.write(f"SEED: {SEED}\n")
+    f.write(f"NODES: {NODES}\n")
+    f.write(f"N_EPISODES: {N_EPISODES}\n")
+    f.write(f"N_ITERATIONS: {N_ITERATIONS}\n")
+    #TODO: save and log other hyperparameters
+    f.close()
 
 # Plotting
 
@@ -162,22 +183,32 @@ grid_archive_heatmap(archive, cmap='Greens')
 plt.title('Archive Heatmap')
 plt.xlabel('Average Entropy')
 plt.ylabel('Average Weight Change')
-plt.savefig('results/cart_pole_archive.png')
+plt.savefig('imgs/cart_pole_archive.png')
 
 # Plot 2: Fitness History
+iterations = np.arange(len(history))
+trend = np.poly1d(np.polyfit(iterations, history, 1))
 plt.figure(figsize=(10, 6))
-plt.plot(history)
+plt.plot(history, label="Fitness")
+plt.plot(iterations, trend(iterations), linestyle="dashed", color="red", label="Trend Line")  # trend line
 plt.title('Fitness History')
 plt.xlabel('Iteration')
 plt.ylabel('Fitness')
+plt.legend()  # Show legend
 plt.tight_layout()
-plt.savefig('results/cart_pole_fitness_history.png')
+plt.savefig('imgs/cart_pole_fitness_history.png')
+plt.show()
 
 # Plot 3: Best Fitness History
+iterations = np.arange(len(history_best))
+trend = np.poly1d(np.polyfit(iterations, history_best, 1))
 plt.figure(figsize=(10, 6))
-plt.plot(history_best)
+plt.plot(history_best, label="Best Fitness")
+plt.plot(iterations, trend(iterations), linestyle="dashed", color="red", label="Trend Line")  # trend line
 plt.title('Best Fitness History')
 plt.xlabel('Iteration')
 plt.ylabel('Fitness')
+plt.legend()  # Show legend
 plt.tight_layout()
-plt.savefig('results/cart_pole_best_fitness_history.png')
+plt.savefig('imgs/cart_pole_best_fitness_history.png')
+plt.show()
