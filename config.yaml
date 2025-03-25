@@ -1,0 +1,8 @@
+seed: 10
+nodes: [4, 4, 2]
+episodes: 2
+iterations: 10
+log: true
+output_log: "logs"
+plot: true
+output_plot: "plots"

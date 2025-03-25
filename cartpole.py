@@ -6,9 +6,9 @@ import argparse
 import datetime
 from tqdm import tqdm
 from collections import defaultdict
+from PIL import Image
 
 import gymnasium as gym
-
 from ribs.archives import GridArchive
 from ribs.schedulers import Scheduler
 from ribs.emitters import EvolutionStrategyEmitter
@@ -63,23 +63,16 @@ def evaluate_team(network, n_episodes=50):
 
 def main():
     parser = argparse.ArgumentParser(description='Cartpole Task')
-    parser.add_argument('--seed', type=int, default=10, help='Random seed')
-    parser.add_argument('--nodes', type=int, nargs='+', default=[4, 4, 2], help='Number of neurons in each layer')
-    parser.add_argument('--episodes', type=int, default=50, help='Number of episodes to evaluate each team')
-    parser.add_argument('--iterations', type=int, default=2000, help='Number of iterations to run the algorithm')
-    parser.add_argument('--output_log', type=str, default='logs', help='Output directory for logs')
-    parser.add_argument('--log', action='store_true', help='Logs results')
-    parser.add_argument('--output_plot', type=str, default='results', help='Output directory for plots')
-    parser.add_argument('--plot', action='store_true', help='Plots results')
-    
+    parser.add_argument('--config', type=str, default='config.yaml', help='Path to config file')
     args = parser.parse_args()
+    config = load_config(args.config)
 
     # archive : store individual neuron solutions
     archive = GridArchive(
         solution_dim=5,  # 5 parameters for each neuron
         dims=[10, 10],
         ranges=[(1.5, 3), (0, 1)],  # average entropy and weight change
-        seed=args.seed,
+        seed=config["seed"],
     )
 
     emitter = EvolutionStrategyEmitter(
@@ -87,7 +80,7 @@ def main():
         x0=np.random.uniform(-1, 1, 5),  # initial solution randomly generated
         sigma0=0.2,  # initial standard deviation
         batch_size=10,  
-        seed=args.seed,
+        seed=config["seed"],
     )
 
     scheduler = Scheduler(emitters=[emitter], archive=archive)
@@ -98,13 +91,19 @@ def main():
     history = []
     history_best = []
     history_mean = []  # Track mean rewards separately
+    
+    # track all net with its own fitness
+    nets = {
+        'fitness': [],
+        'network': []
+    }
 
-    for i in tqdm(range(args.iterations)):
+    for i in tqdm(range(config["iterations"])):
         # Ask the scheduler for a new solution
         sol = scheduler.ask()
         # Create a population of neurons from the solution and shuffle them into teams
-        pop = [Neuron(neuron_id=i, params=sol[i]) for i in range(sum(args.nodes))]
-        teams = create_teams(pop, n_shuffle=10, team_size=sum(args.nodes))
+        pop = [Neuron(neuron_id=i, params=sol[i]) for i in range(sum(config["nodes"]))]
+        teams = create_teams(pop, n_shuffle=10, team_size=sum(config["nodes"]))
         
         # Track neuron descriptors and objectives
         objectives = defaultdict(list)
@@ -114,8 +113,8 @@ def main():
         iteration_means = []
 
         for team in teams:
-            net = NCHL(args.nodes, population=team)
-            eval_results = evaluate_team(net, n_episodes=args.episodes)
+            net = NCHL(config["nodes"], population=team)
+            eval_results = evaluate_team(net, n_episodes=config["episodes"])
             # Use original metric for evolution
             fitness = eval_results['percentile_70']
             mean_reward = eval_results['mean_reward']
@@ -123,12 +122,16 @@ def main():
             iteration_fitnesses.append(fitness)
             iteration_means.append(mean_reward)
             history.append(fitness)
-
+            
             for neuron in net.all_neurons:
                 entropy, weight_change = neuron.compute_descriptors()
                 descriptors[neuron.neuron_id].append([entropy, weight_change])
                 objectives[neuron.neuron_id].append(fitness)
-
+                
+            # Track all nets
+            nets['fitness'].append(fitness)
+            nets['network'].append(net)
+            
         # Track best fitness and mean reward of each iteration
         best_fitness_iteration = max(iteration_fitnesses)
         mean_reward_iteration = np.mean(iteration_means)
@@ -167,19 +170,26 @@ def main():
     print("\nArchive stats:")
     print(archive.stats)
 
-    if args.log:
+    if config["log"]:
         # Log data to file
-        output_log = f'{args.output_log}/cartpole_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}.txt'
-        os.makedirs(args.output_log, exist_ok=True)
-        log_data(output_log, best_fitness, history, archive, args)
+        output_log = f'{config["output_log"]}/cartpole_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}.txt'
+        os.makedirs(config["output_log"], exist_ok=True)
+        log_data(output_log, best_fitness, history, archive, config)
     
-    if args.plot:
-        output_plot = f'{args.output_plot}/cartpole_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}'
+    if config["plot"]:
+        output_plot = f'{config["output_plot"]}/cartpole_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}'
         os.makedirs(output_plot, exist_ok=True)
         
         plot_archive_heatmap(archive, output_plot)                   # Plot archive heatmap
         plot_fitness_history(history, output_plot)                   # Plot fitness history
         plot_fitness_history(history_best, output_plot, best=True)   # Plot best fitness history
+
+    # Sort the dictionary by fitness
+    sorted_nets = sorted(zip(nets['fitness'], nets['network']), key=lambda x: x[0], reverse=True)
+    # save the best 5 networks
+    for i, (fitness, net) in enumerate(sorted_nets[:5]):
+        visualize_network(net, save=True, fitness=fitness, file_name=f'temp/net_{i}.png')
     
+
 if __name__ == '__main__':
     main()
