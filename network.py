@@ -5,24 +5,25 @@ import torch.nn as nn
 class Neuron:
     def __init__(self, neuron_id: int, params=None, device="cpu"):
         self.neuron_id = neuron_id
-        self.device = device  
-        
-        if params is not None:
-            self.set_params(params)
-        else:
-            # Hebbian rule parameters initialized to zero
-            self.pre_factor = torch.tensor(0.0, device=device)
-            self.post_factor = torch.tensor(0.0, device=device)
-            self.correlation = torch.tensor(0.0, device=device)
-            self.decorrelation = torch.tensor(0.0, device=device)
-            self.eta = torch.tensor(0.0, device=device)
-        
+        self.device = device     
+    
+        # Hebbian rule parameters initialized to zero
+        self.pre_factor = torch.tensor(0.0, device=device)
+        self.post_factor = torch.tensor(0.0, device=device)
+        self.correlation = torch.tensor(0.0, device=device)
+        self.decorrelation = torch.tensor(0.0, device=device)
+        self.eta = torch.tensor(0.0, device=device)
+        self.params = []
+    
         # Current activation value of the neuron
         self.activation = torch.tensor(0.0, device=device)
         
         # Store activations and weight changes for the neuron for descriptors
         self.activations = []
         self.weight_changes = []
+        
+        if params is not None:
+            self.set_params(params)
 
     def add_activation(self, activation):
         """Add an activation to the list of activations."""
@@ -34,6 +35,7 @@ class Neuron:
     
     def set_params(self, params: list):
         """Set the Hebbian learning parameters and learning rate for this neuron."""
+        self.params = params
         self.set_hebbian_params(params[0], params[1], params[2], params[3])
         self.set_eta(params[4])
     
@@ -129,7 +131,7 @@ class NCHL(nn.Module):
             for n_neurons in nodes:
                 layer_neurons = []
                 for _ in range(n_neurons):
-                    neuron = Neuron(neuron_id, device)
+                    neuron = Neuron(neuron_id, device=device)
                     layer_neurons.append(neuron)
                     self.all_neurons.append(neuron)
                     neuron_id += 1
