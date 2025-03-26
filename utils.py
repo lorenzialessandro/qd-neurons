@@ -64,6 +64,21 @@ def plot_nets_heatmaps(nets, archives):
     plt.savefig('all_networks_neurons_heatmap.png', dpi=300, bbox_inches='tight')
     #plt.show()
     
+    
+def plot_heatmaps(pop, archives):
+    fig, axs = plt.subplots(2, 5, figsize=(20, 8))
+    axs = axs.flatten()  
+
+    for neuron in pop:
+        archive = archives[neuron.neuron_id]
+        plt.sca(axs[neuron.neuron_id])  # Set the current axis
+        grid_archive_heatmap(archive, cmap='Greens')
+        plt.title(f'Neuron {neuron.neuron_id}')
+        
+    plt.tight_layout()
+    plt.savefig('all_heatmap.png')
+    plt.show()
+    
 def plot_fitness_history(history, output_dir, best=False):
     best = 'Best' if best else ''
     iterations = np.arange(len(history))
@@ -77,7 +92,7 @@ def plot_fitness_history(history, output_dir, best=False):
     plt.legend()  # Show legend
     plt.tight_layout()
     plt.savefig(f'{output_dir}/cart_pole_{best}_fitness_history.png')
-    plt.show()
+    #plt.show()
     
 import matplotlib.pyplot as plt
 import networkx as nx

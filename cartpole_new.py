@@ -18,14 +18,7 @@ from ribs.emitters import EvolutionStrategyEmitter
 from network import NCHL, Neuron
 from utils import *
 
-def evaluate_network(network, seed=None, n_episodes=50):
-    """Evaluate a single network"""
-    if seed is not None:
-        # Set different seeds for different processes
-        np.random.seed(seed)
-        random.seed(seed)
-        torch.manual_seed(seed)
-
+def evaluate_team(network, n_episodes=50):
     env = gym.make('CartPole-v1')
     total_reward = 0
     rewards = []
@@ -53,37 +46,16 @@ def evaluate_network(network, seed=None, n_episodes=50):
 
     # Return statistics
     return {
+
         'percentile_70': np.percentile(rewards, 70),
-        'cumulative_mean_reward': total_reward / n_episodes,
+        'cumulative_mean_reward': total_reward / n_episodes,     # Standard solving criterion
     }
-
-def evaluate_networks_parallel(networks, n_episodes, n_workers=None):
-    """Evaluate multiple networks in parallel"""
-    if n_workers is None:
-        n_workers = min(mp.cpu_count(), len(networks))
-
-    # Create a pool of workers
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        # Create a partial function with fixed n_episodes
-        eval_fn = partial(evaluate_network, n_episodes=n_episodes)
-
-        # Add different seeds to avoid identical random sequences in parallel
-        seeds = [random.randint(0, 10000) for _ in range(len(networks))]
-        jobs = [executor.submit(eval_fn, net, seed)
-                for net, seed in zip(networks, seeds)]
-
-        # Gather results as they complete
-        results = []
-        for job in as_completed(jobs):
-            results.append(job.result())
-
-    return results
 
 def initialize_archives(pop, config):
     archives = {neuron.neuron_id: GridArchive(
         solution_dim=5,
         dims=[10, 10],
-        ranges=[(1.5, 3), (0, 1)],
+        ranges=[(2.5, 4), (0, 1)],
         seed=config["seed"]
     ) for neuron in pop}
 
@@ -152,6 +124,7 @@ def main():
     schedulers = initialize_schedulers(pop, emitters, archives)
     
     nets = []
+    history_fitness = []
 
     for i in tqdm(range(config["iterations"])):
 
@@ -163,21 +136,14 @@ def main():
         # 2. Create networks from teams
         nets = create_nets(pop, config)
 
-        # 3. Evaluate networks in parallel
-        team_results = evaluate_networks_parallel(nets,
-                                                  n_episodes=config["episodes"],
-                                                  n_workers=n_workers)
-
-        # Track fitness results
-        history_fitness = [result['cumulative_mean_reward']
-                           for result in team_results]
-
         # 4. Collect descriptors and objectives
         objectives = defaultdict(list)
         descriptors = defaultdict(list)
 
-        for net, result in zip(nets, team_results):
+        for net in nets:
+            result = evaluate_team(net, n_episodes=config["episodes"])
             fitness = result['cumulative_mean_reward']
+            history_fitness.append(fitness)
 
             # Collect descriptors and objectives for each neuron
             for neuron in net.all_neurons:
@@ -193,7 +159,7 @@ def main():
                                   for d in descriptors[neuron.neuron_id]])
             avg_weight_change = np.mean(
                 [d[1] for d in descriptors[neuron.neuron_id]])
-
+    
             # Update the scheduler
             schedulers[neuron.neuron_id].tell(
                 objective=[avg_obj],
@@ -204,7 +170,9 @@ def main():
             print(
                 f"Iteration: {i}, Mean Fitness: {np.mean(history_fitness):.2f}")
 
-    plot_nets_heatmaps(nets, archives)
+    
+    plot_heatmaps(pop, archives)
+    plot_fitness_history(history_fitness, "results")
 
 
 if __name__ == '__main__':
