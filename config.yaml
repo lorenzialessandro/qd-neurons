@@ -1,8 +1,9 @@
 seed: 10
 nodes: [4, 4, 2]
-episodes: 10
-iterations: 100
+episodes: 100
+iterations: 2000
 n_teams: 10
+threshold: 475
 log: false
 output_log: "logs"
 plot: true

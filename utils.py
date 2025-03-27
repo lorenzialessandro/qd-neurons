@@ -91,7 +91,26 @@ def plot_fitness_history(history, output_dir, best=False):
     plt.ylabel('Fitness')
     plt.legend()  # Show legend
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/cart_pole_{best}_fitness_history.png')
+    plt.savefig(f'{output_dir}/cart_pole_{best}_fitness_history_1.png')
+    #plt.show()
+    
+def plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, config, i=0):
+    plt.figure(figsize=(10, 6))
+    generations = np.arange(len(best_fitness_per_iteration))
+    
+    # Plot best fitness
+    plt.plot(generations, best_fitness_per_iteration, 'b-', label="Best Fitness")
+    # Plot average fitness
+    plt.plot(generations, avg_fitness_per_iteration, 'r-', label="Average Fitness")
+    # Plot threshold
+    plt.axhline(y=config["threshold"], color='r', linestyle='--', label="Threshold")
+    
+    plt.title("Fitness Trends")
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f'{config["output_plot"]}/fitness_trends_{i}.png')
     #plt.show()
     
 import matplotlib.pyplot as plt

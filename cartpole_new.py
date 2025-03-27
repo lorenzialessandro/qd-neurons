@@ -6,9 +6,6 @@ import argparse
 from tqdm import tqdm
 from collections import defaultdict
 from PIL import Image
-import multiprocessing as mp
-from concurrent.futures import ProcessPoolExecutor, as_completed
-from functools import partial
 
 import gymnasium as gym
 from ribs.archives import GridArchive
@@ -20,7 +17,6 @@ from utils import *
 
 def evaluate_team(network, n_episodes=50):
     env = gym.make('CartPole-v1')
-    total_reward = 0
     rewards = []
 
     for _ in range(n_episodes):
@@ -39,16 +35,17 @@ def evaluate_team(network, n_episodes=50):
 
             network.update_weights()
 
-        total_reward += episode_reward
         rewards.append(episode_reward)
 
+    # Mean reward across all episodes
+    mean_reward = np.mean(rewards)
     env.close()
 
     # Return statistics
     return {
 
         'percentile_70': np.percentile(rewards, 70),
-        'cumulative_mean_reward': total_reward / n_episodes,     # Standard solving criterion
+        'mean_reward': mean_reward,
     }
 
 def initialize_archives(pop, config):
@@ -105,10 +102,6 @@ def main():
     args = parser.parse_args()
     config = load_config(args.config)
 
-    # Set number of workers
-    n_workers = args.workers if args.workers is not None else mp.cpu_count()
-    print(f"Using {n_workers} parallel workers")
-
     # Set random seed for reproducibility
     random.seed(config["seed"])
     np.random.seed(config["seed"])
@@ -124,9 +117,11 @@ def main():
     schedulers = initialize_schedulers(pop, emitters, archives)
     
     nets = []
-    history_fitness = []
+    best_fitness_per_iteration = []
+    avg_fitness_per_iteration = []
 
     for i in tqdm(range(config["iterations"])):
+        iteration_fitness = []
 
         # 1. Ask params for each neuron
         for neuron in pop:
@@ -142,9 +137,9 @@ def main():
 
         for net in nets:
             result = evaluate_team(net, n_episodes=config["episodes"])
-            fitness = result['cumulative_mean_reward']
-            history_fitness.append(fitness)
-
+            fitness = result['mean_reward']
+            iteration_fitness.append(fitness)
+            
             # Collect descriptors and objectives for each neuron
             for neuron in net.all_neurons:
                 entropy, weight_change = neuron.compute_descriptors()
@@ -166,16 +161,33 @@ def main():
                 measures=[(avg_entropy, avg_weight_change)]
             )
 
-        if i % 10 == 0:
-            print(
-                f"Iteration: {i}, Mean Fitness: {np.mean(history_fitness):.2f}")
 
-    
+        # Save the best and average fitness for this iteration
+        best_fitness = max(iteration_fitness)
+        avg_fitness = np.mean(iteration_fitness)
+        
+        best_fitness_per_iteration.append(best_fitness)
+        avg_fitness_per_iteration.append(avg_fitness)
+
+        if i % 10 == 0:
+            print(f"Iteration: {i}, Best Fitness: {best_fitness}, Avg Fitness: {avg_fitness}")
+            plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, config, i)
+            
+        # Check if task is solved
+        if best_fitness >= config["threshold"]:
+            print(f"Task solved at iteration {i}")
+
+    plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, config)
     plot_heatmaps(pop, archives)
-    plot_fitness_history(history_fitness, "results")
+    
 
 
 if __name__ == '__main__':
-    # Required for parallel processing on Windows
-    mp.set_start_method('spawn', force=True)
     main()
+
+
+# TODO:
+# - [ ] Start with high shuffling rates, then gradually reduce shuffling as training progresses
+# - [ ] Evaluate each neuron across more network configurations before updating 
+        # Use a moving average of performance rather than just the current iteration
+# - [ ] Phase 1: Exploration Phase (current) - Phase 2: Exploitation Phase: extract the best neurons from the archive and train them on the full network
