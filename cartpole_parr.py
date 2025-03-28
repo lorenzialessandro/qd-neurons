@@ -7,6 +7,7 @@ import multiprocessing
 from tqdm import tqdm
 from collections import defaultdict
 from PIL import Image
+import logging
 
 import gymnasium as gym
 from ribs.archives import GridArchive
@@ -15,6 +16,10 @@ from ribs.emitters import EvolutionStrategyEmitter
 
 from network import NCHL, Neuron
 from utils import *
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler('cartpole.log'), logging.StreamHandler()])
+logger = logging.getLogger(__name__)
 
 def evaluate_team(network, n_episodes=50):
     # Do NOT cache here as it prevents neuron state updates needed for descriptors
@@ -120,6 +125,9 @@ def main():
                         help='Number of parallel workers (default: number of CPU cores)')
     args = parser.parse_args()
     config = load_config(args.config)
+    
+    logger.info("Starting Cartpole Task")
+    logger.info(f"Configuration: {config}")
 
     # Set random seed for reproducibility
     random.seed(config["seed"])
@@ -203,6 +211,7 @@ def main():
 
         if i % 10 == 0:
             print(f"Iteration: {i}, Best Fitness: {best_fitness}, Avg Fitness: {avg_fitness}")
+            logger.info(f"Iteration: {i}, Best Fitness: {best_fitness}, Avg Fitness: {avg_fitness}")
         # Check if task is solved
         if best_fitness >= config["threshold"]:
             print(f"Task solved at iteration {i}")
@@ -211,6 +220,8 @@ def main():
     # Cleanup
     pool.close()
     pool.join()
+    
+    logger.info("Cartpole Task completed")
     
     # --- Plotting ---
     plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, median_fitness_per_iteration, config)

@@ -1,0 +1,23 @@
+2025-03-28 14:08:26,309 - __main__ - INFO - Starting Cartpole Task
+2025-03-28 14:08:26,309 - __main__ - INFO - Configuration: {'seed': 3, 'nodes': [4, 4, 2], 'episodes': 80, 'iterations': 200, 'n_teams': 10, 'threshold': 475, 'log': False, 'output_log': 'logs', 'plot': True, 'output_plot': 'plots'}
+2025-03-28 14:08:35,705 - __main__ - INFO - Iteration: 0, Best Fitness: 65.5875, Avg Fitness: 17.30375
+2025-03-28 14:10:50,175 - __main__ - INFO - Iteration: 10, Best Fitness: 91.2625, Avg Fitness: 25.848750000000003
+2025-03-28 14:14:24,673 - __main__ - INFO - Iteration: 20, Best Fitness: 256.1, Avg Fitness: 45.58500000000001
+2025-03-28 14:16:11,778 - __main__ - INFO - Iteration: 30, Best Fitness: 210.5375, Avg Fitness: 42.41375
+2025-03-28 14:18:08,613 - __main__ - INFO - Iteration: 40, Best Fitness: 196.025, Avg Fitness: 50.251250000000006
+2025-03-28 14:22:35,776 - __main__ - INFO - Iteration: 50, Best Fitness: 157.625, Avg Fitness: 40.47
+2025-03-28 14:25:26,243 - __main__ - INFO - Iteration: 60, Best Fitness: 246.4125, Avg Fitness: 44.03
+2025-03-28 14:28:14,088 - __main__ - INFO - Iteration: 70, Best Fitness: 130.7625, Avg Fitness: 43.24249999999999
+2025-03-28 14:31:45,704 - __main__ - INFO - Iteration: 80, Best Fitness: 282.0375, Avg Fitness: 41.698750000000004
+2025-03-28 14:34:23,956 - __main__ - INFO - Iteration: 90, Best Fitness: 314.525, Avg Fitness: 47.614999999999995
+2025-03-28 14:37:56,650 - __main__ - INFO - Iteration: 100, Best Fitness: 345.7, Avg Fitness: 49.79624999999999
+2025-03-28 14:41:02,479 - __main__ - INFO - Iteration: 110, Best Fitness: 62.5125, Avg Fitness: 17.475
+2025-03-28 14:43:38,522 - __main__ - INFO - Iteration: 120, Best Fitness: 122.3375, Avg Fitness: 25.27125
+2025-03-28 14:46:53,957 - __main__ - INFO - Iteration: 130, Best Fitness: 49.7625, Avg Fitness: 17.580000000000002
+2025-03-28 14:49:49,298 - __main__ - INFO - Iteration: 140, Best Fitness: 71.3, Avg Fitness: 16.73875
+2025-03-28 14:51:35,816 - __main__ - INFO - Iteration: 150, Best Fitness: 135.2, Avg Fitness: 41.072500000000005
+2025-03-28 14:52:37,340 - __main__ - INFO - Iteration: 160, Best Fitness: 68.65, Avg Fitness: 21.0025
+2025-03-28 14:54:28,205 - __main__ - INFO - Iteration: 170, Best Fitness: 123.15, Avg Fitness: 33.087500000000006
+2025-03-28 14:57:46,789 - __main__ - INFO - Iteration: 180, Best Fitness: 500.0, Avg Fitness: 67.58875
+2025-03-28 15:00:36,758 - __main__ - INFO - Iteration: 190, Best Fitness: 147.7375, Avg Fitness: 46.3025
+2025-03-28 15:02:11,149 - __main__ - INFO - Cartpole Task completed
