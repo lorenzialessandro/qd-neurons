@@ -12,7 +12,7 @@ class Neuron:
         self.post_factor = torch.tensor(0.0, device=device)
         self.correlation = torch.tensor(0.0, device=device)
         self.decorrelation = torch.tensor(0.0, device=device)
-        self.eta = torch.tensor(0.0, device=device)
+        self.eta = torch.tensor(0.0, device=device) 
         self.params = []
     
         # Current activation value of the neuron
