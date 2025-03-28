@@ -8,6 +8,7 @@ from tqdm import tqdm
 from collections import defaultdict
 from PIL import Image
 import logging
+from datetime import datetime
 
 import gymnasium as gym
 from ribs.archives import GridArchive
@@ -17,14 +18,16 @@ from ribs.emitters import EvolutionStrategyEmitter
 from network import NCHL, Neuron
 from utils import *
 
+timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+path = f"tests/{timestamp}"
+os.makedirs(path, exist_ok=True)
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler('cartpole.log'), logging.StreamHandler()])
+logging.basicConfig(
+    level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[logging.FileHandler(f'{path}/cartpole.log'), logging.StreamHandler()])
 logger = logging.getLogger(__name__)
 
 def evaluate_team(network, n_episodes=50):
-    # Do NOT cache here as it prevents neuron state updates needed for descriptors
-    # The neuron internal state changes are critical for descriptor computation
-    
     env = gym.make('CartPole-v1')
     rewards = []
 
@@ -126,6 +129,8 @@ def main():
     args = parser.parse_args()
     config = load_config(args.config)
     
+    os.makedirs('log', exist_ok=True)
+    
     logger.info("Starting Cartpole Task")
     logger.info(f"Configuration: {config}")
 
@@ -224,10 +229,10 @@ def main():
     logger.info("Cartpole Task completed")
     
     # --- Plotting ---
-    plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, median_fitness_per_iteration, config)
-    plot_heatmaps(pop, archives, config)
-    plot_pcas(pop, archives, config)
-    plot_pca_best_rules(pop, archives, config)
+    plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, median_fitness_per_iteration, path, config["threshold"])
+    plot_heatmaps(pop, archives, path)
+    plot_pcas(pop, archives, path)
+    plot_pca_best_rules(pop, archives, path)
     
 
     

@@ -13,21 +13,7 @@ def load_config(config_path):
     with open(config_path, "r") as file:
         return yaml.safe_load(file)
 
-# Log the data to a file
-def log_data(filename, best_fitness, history, archive, config):
-    with open(filename, 'w') as f:
-        # log final statistics
-        f.write("Final Statistics:\n")
-        f.write(f"Best fitness achieved: {best_fitness:.2f}\n")
-        f.write(f"Final average fitness: {np.mean(history):.2f}\n")
-        f.write("\nArchive stats:\n")
-        f.write(str(archive.stats))
-        # log hyperparameters (yaml format)
-        f.write("\n\nHyperparameters:\n")
-        f.write(yaml.dump(config))
-
-# Plotting
-
+# -----------------------------
 
 def plot_archive_heatmap(archive: GridArchive, output_dir):
     grid_archive_heatmap(archive, cmap='Greens')
@@ -39,7 +25,7 @@ def plot_archive_heatmap(archive: GridArchive, output_dir):
     plt.show()
 
 
-def plot_heatmaps(pop, archives, config):
+def plot_heatmaps(pop, archives, path):
     fig, axs = plt.subplots(2, 5, figsize=(20, 8))
     axs = axs.flatten()
 
@@ -50,11 +36,11 @@ def plot_heatmaps(pop, archives, config):
         plt.title(f'Neuron {neuron.neuron_id}')
 
     plt.tight_layout()
-    plt.savefig(f"{config['output_plot']}/all_neurons_heatmap.png")
+    plt.savefig(f"{path}/all_neurons_heatmap.png")
     # plt.show()
 
 
-def plot_pcas(pop, archives, config):
+def plot_pcas(pop, archives, path):
     fig, axs = plt.subplots(2, 5, figsize=(20, 8))
     axs = axs.flatten()
     for neuron in pop:
@@ -87,11 +73,11 @@ def plot_pcas(pop, archives, config):
         plt.colorbar(scatter, label='Fitness')
 
     plt.tight_layout()
-    plt.savefig(f"{config['output_plot']}/all_neurons_pca.png")
+    plt.savefig(f"{path}/all_neurons_pca.png")
     # plt.show()
 
 
-def plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, median_fitness_per_iteration, config, i=0):
+def plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, median_fitness_per_iteration, path, threshold):
     plt.figure(figsize=(10, 6))
     generations = np.arange(len(best_fitness_per_iteration))
 
@@ -105,7 +91,7 @@ def plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, m
     plt.plot(generations, median_fitness_per_iteration,
                 'g-', label="Median Fitness")
     # Plot threshold
-    plt.axhline(y=config["threshold"], color='r',
+    plt.axhline(y=threshold, color='r',
                 linestyle='--', label="Threshold")
 
     plt.title("Fitness Trends")
@@ -113,11 +99,11 @@ def plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, m
     plt.ylabel("Fitness")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f'{config["output_plot"]}/fitness_trends_{i}.png')
+    plt.savefig(f'{path}/fitness_trends.png')
     # plt.show()
 
 
-def plot_pca_best_rules(pop, archives, config):
+def plot_pca_best_rules(pop, archives, path):
     params = []
     fitnesses = []
     neuron_ids = []
@@ -146,7 +132,7 @@ def plot_pca_best_rules(pop, archives, config):
     plt.xlabel('PC1')
     plt.ylabel('PC2')
     plt.title('PCA of Best Rules')
-    plt.savefig(f'{config["output_plot"]}/pca_best_rules.png')
+    plt.savefig(f'{path}/pca_best_rules.png')
 
 # -----------------------------
 # --- Network Visualization ---
