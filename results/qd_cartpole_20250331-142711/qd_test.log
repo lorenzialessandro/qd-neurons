@@ -1,0 +1,89 @@
+2025-03-31 14:27:11,149 - __main__ - INFO - Starting QD CartPole Training
+2025-03-31 14:27:11,149 - __main__ - INFO - Configuration: {'seed': 42, 'nodes': [4, 4, 2], 'iterations': 100, 'threshold': 475, 'episodes': 10, 'n_teams': 10}
+2025-03-31 14:27:15,309 - __main__ - INFO - Iteration 0: Best=49.8, Avg=18.2
+2025-03-31 14:27:52,243 - __main__ - INFO - Iteration 10: Best=206.8, Avg=49.0
+2025-03-31 14:28:27,492 - __main__ - INFO - Iteration 20: Best=268.0, Avg=80.0
+2025-03-31 14:28:35,720 - __main__ - INFO - Task solved at iteration 21!
+2025-03-31 14:28:40,783 - __main__ - INFO - Task solved at iteration 22!
+2025-03-31 14:29:03,908 - __main__ - INFO - Task solved at iteration 26!
+2025-03-31 14:29:09,820 - __main__ - INFO - Task solved at iteration 27!
+2025-03-31 14:29:15,437 - __main__ - INFO - Task solved at iteration 28!
+2025-03-31 14:29:23,741 - __main__ - INFO - Task solved at iteration 29!
+2025-03-31 14:29:29,720 - __main__ - INFO - Iteration 30: Best=500.0, Avg=87.2
+2025-03-31 14:29:29,721 - __main__ - INFO - Task solved at iteration 30!
+2025-03-31 14:29:35,446 - __main__ - INFO - Task solved at iteration 31!
+2025-03-31 14:29:43,200 - __main__ - INFO - Task solved at iteration 32!
+2025-03-31 14:29:50,929 - __main__ - INFO - Task solved at iteration 33!
+2025-03-31 14:30:00,171 - __main__ - INFO - Task solved at iteration 34!
+2025-03-31 14:30:07,579 - __main__ - INFO - Task solved at iteration 35!
+2025-03-31 14:30:14,395 - __main__ - INFO - Task solved at iteration 36!
+2025-03-31 14:30:19,976 - __main__ - INFO - Task solved at iteration 37!
+2025-03-31 14:30:25,622 - __main__ - INFO - Task solved at iteration 38!
+2025-03-31 14:30:34,203 - __main__ - INFO - Task solved at iteration 39!
+2025-03-31 14:30:41,457 - __main__ - INFO - Iteration 40: Best=500.0, Avg=101.2
+2025-03-31 14:30:41,458 - __main__ - INFO - Task solved at iteration 40!
+2025-03-31 14:30:47,562 - __main__ - INFO - Task solved at iteration 41!
+2025-03-31 14:30:55,231 - __main__ - INFO - Task solved at iteration 42!
+2025-03-31 14:31:02,108 - __main__ - INFO - Task solved at iteration 43!
+2025-03-31 14:31:10,820 - __main__ - INFO - Task solved at iteration 44!
+2025-03-31 14:31:17,428 - __main__ - INFO - Task solved at iteration 45!
+2025-03-31 14:31:25,244 - __main__ - INFO - Task solved at iteration 46!
+2025-03-31 14:31:33,810 - __main__ - INFO - Task solved at iteration 47!
+2025-03-31 14:31:43,163 - __main__ - INFO - Task solved at iteration 48!
+2025-03-31 14:31:49,888 - __main__ - INFO - Task solved at iteration 49!
+2025-03-31 14:31:57,282 - __main__ - INFO - Iteration 50: Best=500.0, Avg=92.2
+2025-03-31 14:31:57,283 - __main__ - INFO - Task solved at iteration 50!
+2025-03-31 14:32:04,363 - __main__ - INFO - Task solved at iteration 51!
+2025-03-31 14:32:11,664 - __main__ - INFO - Task solved at iteration 52!
+2025-03-31 14:32:21,943 - __main__ - INFO - Task solved at iteration 53!
+2025-03-31 14:32:29,096 - __main__ - INFO - Task solved at iteration 54!
+2025-03-31 14:32:36,938 - __main__ - INFO - Task solved at iteration 55!
+2025-03-31 14:32:46,007 - __main__ - INFO - Task solved at iteration 56!
+2025-03-31 14:32:56,928 - __main__ - INFO - Task solved at iteration 57!
+2025-03-31 14:33:06,035 - __main__ - INFO - Task solved at iteration 58!
+2025-03-31 14:33:15,061 - __main__ - INFO - Task solved at iteration 59!
+2025-03-31 14:33:22,954 - __main__ - INFO - Iteration 60: Best=500.0, Avg=98.4
+2025-03-31 14:33:22,955 - __main__ - INFO - Task solved at iteration 60!
+2025-03-31 14:33:32,741 - __main__ - INFO - Task solved at iteration 61!
+2025-03-31 14:33:42,223 - __main__ - INFO - Task solved at iteration 62!
+2025-03-31 14:33:49,539 - __main__ - INFO - Task solved at iteration 63!
+2025-03-31 14:33:57,643 - __main__ - INFO - Task solved at iteration 64!
+2025-03-31 14:34:07,837 - __main__ - INFO - Task solved at iteration 65!
+2025-03-31 14:34:17,414 - __main__ - INFO - Task solved at iteration 66!
+2025-03-31 14:34:28,472 - __main__ - INFO - Task solved at iteration 67!
+2025-03-31 14:34:40,629 - __main__ - INFO - Task solved at iteration 68!
+2025-03-31 14:34:49,003 - __main__ - INFO - Task solved at iteration 69!
+2025-03-31 14:34:56,398 - __main__ - INFO - Iteration 70: Best=500.0, Avg=76.3
+2025-03-31 14:34:56,399 - __main__ - INFO - Task solved at iteration 70!
+2025-03-31 14:35:04,476 - __main__ - INFO - Task solved at iteration 71!
+2025-03-31 14:35:17,829 - __main__ - INFO - Task solved at iteration 72!
+2025-03-31 14:35:27,709 - __main__ - INFO - Task solved at iteration 73!
+2025-03-31 14:35:37,007 - __main__ - INFO - Task solved at iteration 74!
+2025-03-31 14:35:49,741 - __main__ - INFO - Task solved at iteration 75!
+2025-03-31 14:35:57,941 - __main__ - INFO - Task solved at iteration 76!
+2025-03-31 14:36:06,285 - __main__ - INFO - Task solved at iteration 77!
+2025-03-31 14:36:17,353 - __main__ - INFO - Task solved at iteration 78!
+2025-03-31 14:36:30,135 - __main__ - INFO - Task solved at iteration 79!
+2025-03-31 14:36:39,567 - __main__ - INFO - Iteration 80: Best=500.0, Avg=109.1
+2025-03-31 14:36:39,568 - __main__ - INFO - Task solved at iteration 80!
+2025-03-31 14:36:49,890 - __main__ - INFO - Task solved at iteration 81!
+2025-03-31 14:37:02,330 - __main__ - INFO - Task solved at iteration 82!
+2025-03-31 14:37:12,939 - __main__ - INFO - Task solved at iteration 83!
+2025-03-31 14:37:26,150 - __main__ - INFO - Task solved at iteration 84!
+2025-03-31 14:37:37,793 - __main__ - INFO - Task solved at iteration 85!
+2025-03-31 14:37:47,452 - __main__ - INFO - Task solved at iteration 86!
+2025-03-31 14:37:58,456 - __main__ - INFO - Task solved at iteration 87!
+2025-03-31 14:38:13,047 - __main__ - INFO - Task solved at iteration 88!
+2025-03-31 14:38:23,252 - __main__ - INFO - Task solved at iteration 89!
+2025-03-31 14:38:35,798 - __main__ - INFO - Iteration 90: Best=500.0, Avg=146.0
+2025-03-31 14:38:35,798 - __main__ - INFO - Task solved at iteration 90!
+2025-03-31 14:38:48,764 - __main__ - INFO - Task solved at iteration 91!
+2025-03-31 14:39:01,864 - __main__ - INFO - Task solved at iteration 92!
+2025-03-31 14:39:16,533 - __main__ - INFO - Task solved at iteration 93!
+2025-03-31 14:39:27,692 - __main__ - INFO - Task solved at iteration 94!
+2025-03-31 14:39:37,747 - __main__ - INFO - Task solved at iteration 95!
+2025-03-31 14:39:50,999 - __main__ - INFO - Task solved at iteration 96!
+2025-03-31 14:40:03,616 - __main__ - INFO - Task solved at iteration 97!
+2025-03-31 14:40:14,221 - __main__ - INFO - Task solved at iteration 98!
+2025-03-31 14:40:30,835 - __main__ - INFO - Task solved at iteration 99!
+2025-03-31 14:40:32,118 - __main__ - INFO - Final performance: {'mean_reward': 11.93, 'max_reward': 51.0, 'std_reward': 6.9516257091417115}

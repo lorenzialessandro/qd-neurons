@@ -12,6 +12,17 @@ from sklearn.preprocessing import StandardScaler
 def load_config(config_path):
     with open(config_path, "r") as file:
         return yaml.safe_load(file)
+    
+def save_network_params(network, output_dir):
+    """Save the parameters of a network"""
+    params = []
+    for neuron in network.all_neurons:
+        params.append({
+            'neuron_id': neuron.neuron_id,
+            'params': neuron.params
+        })
+    
+    np.save(f"{output_dir}/best_network_params.npy", params)
 
 # -----------------------------
 
@@ -77,7 +88,7 @@ def plot_pcas(pop, archives, path):
     # plt.show()
 
 
-def plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, median_fitness_per_iteration, path, threshold):
+def plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, path, threshold):
     plt.figure(figsize=(10, 6))
     generations = np.arange(len(best_fitness_per_iteration))
 
@@ -87,9 +98,6 @@ def plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, m
     # Plot average fitness
     plt.plot(generations, avg_fitness_per_iteration,
              'r-', label="Average Fitness")
-    # Plot median fitness
-    plt.plot(generations, median_fitness_per_iteration,
-                'g-', label="Median Fitness")
     # Plot threshold
     plt.axhline(y=threshold, color='r',
                 linestyle='--', label="Threshold")

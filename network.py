@@ -55,14 +55,150 @@ class Neuron:
         self.activation = activation.to(self.device)
         self.add_activation(activation)
 
+    # def get_hebbian_terms(self):
+    #     """Get the Hebbian terms for weight updates."""
+    #     return (
+    #         (self.pre_factor * self.activation).to(self.device),
+    #         (self.post_factor * self.activation).to(self.device),
+    #         1. if self.correlation == 1. else (self.correlation * self.activation).to(self.device),
+    #         self.decorrelation.to(self.device)
+    #     )
+    
+    
+    # Modified get_hebbian_terms method for the Neuron class
     def get_hebbian_terms(self):
         """Get the Hebbian terms for weight updates."""
         return (
             (self.pre_factor * self.activation).to(self.device),
             (self.post_factor * self.activation).to(self.device),
-            1. if self.correlation == 1. else (self.correlation * self.activation).to(self.device),
+            torch.tensor(1.0, device=self.device) if self.correlation == 1. else (self.correlation * self.activation).to(self.device),
             self.decorrelation.to(self.device)
         )
+    
+    def compute_behavioral_variability(self):
+        """
+        Compute the behavioral variability of the neuron.
+        This is a measure of how much the neuron's output varies across different inputs:
+        - Low variability: neuron responds similarly to different inputs
+        - High variability: neuron responds differently to different
+        
+        Low: neuron is specialized to a specific input and responds similarly to similar inputs (so is more stable)
+        High: neuron changes its response to similar inputs (so is less stable) so is more plastic : more adaptable
+        """
+        if not self.activations:
+            return 0.0
+        if len(self.activations) < 10: # not enough activations to compute variability
+            return 0.5
+
+        # Option 1: Compute standard deviation of activations
+        activations_tensor = torch.tensor(self.activations, device=self.device)
+        std = torch.std(activations_tensor).item()
+        # return std
+
+        # Option 2: Measure response to similar inputs
+        n_chunks = min(10, len(self.activations) // 10)
+        chunks = torch.chunk(activations_tensor, n_chunks)
+        # mean of each chunk
+        means = torch.stack([torch.mean(chunk) for chunk in chunks])
+        # variance of means
+        chunk_var = torch.var(means).item()
+        # normalize between 0 and 1
+        norm_chunk_var = min(1.0, chunk_var / 0.5)
+        return norm_chunk_var
+    
+    
+    def compute_complexity(self):
+        """
+        Compute the complexity of the neuron.
+        
+        In this case, we use the FFT of the neuron's activations to compute the complexity.
+        Measures how many components are needed to represent the neuron's response: so how many components are needed to represent the neuron's response.
+        More components needed -> more complex neuron
+        - Low complexity: neuron responds to a small number of components in the input
+        - High complexity: neuron responds to a large number of components in the input
+        
+        So a low complexity neuron is more specialized to a specific input, while a high complexity neuron is more general.
+        """
+        if not self.activations:
+            return 0.0
+        if len(self.activations) < 10:
+            return 0.5
+        
+        # Compute the complexity of the neuron
+        activations_tensor = torch.tensor(self.activations, device=self.device)
+        
+        fft_components = torch.abs(torch.fft.fft(activations_tensor))
+        tot_power = torch.sum(fft_components)
+        
+        if tot_power == 0:
+            return 0.0
+        
+        norm_fft = fft_components / tot_power
+        cum_power = torch.cumsum(norm_fft, dim=0)
+        
+        # Count the number of components needed to reach 95% of the power : how many components are needed to represent the neuron's response
+        n_components = torch.sum(cum_power < 0.80).item()
+        max_components = len(self.activations) // 2
+        # Normalize between 0 and 1
+        norm_n_components = min(1.0, n_components / max_components)
+        return norm_n_components
+        
+        
+    def compute_new_complexity(self):
+        if not self.activations:
+            return 0.0
+        if len(self.activations) < 10:
+            return 0.5
+        
+        # Compute the complexity of the neuron
+        activations_tensor = torch.tensor(self.activations, device=self.device)
+        
+        # Apply windowing to reduce spectral leakage
+        window = torch.hann_window(len(activations_tensor), device=self.device)
+        windowed_activations = activations_tensor * window
+        
+        fft_components = torch.abs(torch.fft.fft(windowed_activations))
+        tot_power = torch.sum(fft_components)
+        
+        if tot_power == 0:
+            return 0.0
+        
+        # Take only the first half of FFT (positive frequencies)
+        half_fft = fft_components[:len(fft_components)//2]
+        half_power = torch.sum(half_fft)
+        
+        if half_power == 0:
+            return 0.0
+        
+        norm_fft = half_fft / half_power
+        cum_power = torch.cumsum(norm_fft, dim=0)
+        
+        power_threshold = 0.80
+        n_components = torch.sum(cum_power < power_threshold).item()
+        
+        # Adjust normalization to create more differentiation
+        max_components = len(half_fft)
+        norm_n_components = n_components / max_components
+        tensor = torch.tensor([norm_n_components], device=self.device)
+        
+        # Apply non-linear scaling to spread out values
+        # This creates more differentiation between medium and high complexity
+        scaled_complexity = torch.tanh(tensor * 3).item()
+        
+        return scaled_complexity
+    
+    def compute_new_descriptor(self):
+        if not self.activations:
+            return 0.0, 0.0
+
+        # Compute behavioral variability
+        behavioral_variability = self.compute_behavioral_variability()
+        # Compute complexity
+        complexity = self.compute_new_complexity()
+        
+        return behavioral_variability, complexity
+        
+        
 
     def compute_descriptors(self):
         """Compute the descriptors for the neuron."""

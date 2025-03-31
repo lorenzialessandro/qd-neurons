@@ -69,7 +69,7 @@ def initialize_archives(pop, config):
     archives = {neuron.neuron_id: GridArchive(
         solution_dim=5,
         dims=[10, 10],
-        ranges=[(2.5, 4), (0, 1)],
+        ranges=[(0, 1), (0, 1)],
         seed=config["seed"]
     ) for neuron in pop}
 
@@ -94,11 +94,17 @@ def initialize_schedulers(pop, emitters, archives):
 
     return schedulers
 
-def create_nets(pop, config, n_teams=10):
+def create_nets(pop, config, elites, n_teams=10):
     nets = []
     teams = []
+    
+    if elites:
+        nets.extend(elites)
+        
+    remaining_teams = n_teams - len(teams)
+    
     # Create random teams of neurons
-    for _ in range(n_teams):
+    for _ in range(remaining_teams):
         p = pop.copy()
         random.shuffle(p)
         teams.append(p)
@@ -110,15 +116,21 @@ def create_nets(pop, config, n_teams=10):
 
     return nets
 
-def selection_fitness_proportional(archive):
+def selection_fitness_proportional(archive, iteration):
     """Select a solution from the archive using fitness-proportional selection"""
     data = archive.data()
     fitnesses = np.array(data["objective"])
-    x = 5 # Selection pressure
+    x = 1 + (iteration / 100) ** 2 # Start with x=1 and increase it as the population improves (iteration increases)
     probabilities = (fitnesses ** x) / np.sum(fitnesses ** x)
     index = np.random.choice(len(probabilities), p=probabilities)
     params = data["solution"][index]
     return params
+
+def elites_team(teams, elite_ratio=0.1, min_elites=3):
+    sorted_teams = sorted(teams, key=lambda x: x[1], reverse=True)
+    n_elites = max(min_elites, int(len(teams) * elite_ratio))
+    elites = [team[0] for team in sorted_teams[:n_elites]]
+    return elites
 
 def main():
     parser = argparse.ArgumentParser(description='Cartpole Task')
@@ -128,8 +140,6 @@ def main():
                         help='Number of parallel workers (default: number of CPU cores)')
     args = parser.parse_args()
     config = load_config(args.config)
-    
-    os.makedirs('log', exist_ok=True)
     
     logger.info("Starting Cartpole Task")
     logger.info(f"Configuration: {config}")
@@ -157,6 +167,8 @@ def main():
     best_fitness_per_iteration = []
     avg_fitness_per_iteration = []
     median_fitness_per_iteration = []
+    
+    teams_elites = []
 
     for i in tqdm(range(config["iterations"])):
         iteration_fitness = []
@@ -166,12 +178,12 @@ def main():
             sol = schedulers[neuron.neuron_id].ask()[0]
             if not archives[neuron.neuron_id].empty:
                 # Select a solution using fitness-proportional selection (overwrites sol because need ask() before tell())
-                sol = selection_fitness_proportional(archives[neuron.neuron_id]) 
+                sol = selection_fitness_proportional(archives[neuron.neuron_id], i)
             
             neuron.set_params(sol)
 
         # 2. Create networks from teams
-        nets = create_nets(pop, config)
+        nets = create_nets(pop, config, elites=teams_elites)
 
         # 3. Parallel evaluation of networks
         network_configs = [(net, config["episodes"]) for net in nets]
@@ -187,21 +199,27 @@ def main():
             
             # Collect descriptors and objectives for each neuron
             for neuron in net.all_neurons:
-                entropy, weight_change = neuron.compute_descriptors()
-                
-                descriptors[neuron.neuron_id].append([entropy, weight_change])
+                # entropy, weight_change = neuron.compute_descriptors()
+                behavior, complexity = neuron.compute_descriptors()
+                # print(f"Neuron {neuron.neuron_id}, Entropy: {entropy}, (Weight Change): {weight_change}, Fitness: {fitness}")
+                # print(f"Neuron {neuron.neuron_id}, Behavior: {behavior}, Complexity: {complexity}, Fitness: {fitness}")
+                # descriptors[neuron.neuron_id].append([entropy, weight_change])
+                descriptors[neuron.neuron_id].append([behavior, complexity])
                 objectives[neuron.neuron_id].append(fitness)
 
         # 5. Tell the scheduler the fitness and descriptors of each neuron
         for neuron in pop:
             # Aggregate the descriptors and objectives
-            avg_obj = np.mean(objectives[neuron.neuron_id])
+            # avg_obj = np.mean(objectives[neuron.neuron_id])
+            # Fitness aggregation : Percentile-Based Aggregation 
+            perc_70 = np.percentile(objectives[neuron.neuron_id], 70)
             avg_entropy = np.mean([d[0] for d in descriptors[neuron.neuron_id]])
             avg_weight_change = np.mean([d[1] for d in descriptors[neuron.neuron_id]])
     
             # Update the scheduler
             schedulers[neuron.neuron_id].tell(
-                objective=[avg_obj],
+                # objective=[avg_obj],
+                objective=[perc_70],
                 measures=[(avg_entropy, avg_weight_change)]
             )
 
@@ -213,6 +231,8 @@ def main():
         best_fitness_per_iteration.append(best_fitness)
         avg_fitness_per_iteration.append(avg_fitness)
         median_fitness_per_iteration.append(median_fitness)
+
+        teams_elites = elites_team(list(zip(nets, iteration_fitness)))
 
         if i % 10 == 0:
             print(f"Iteration: {i}, Best Fitness: {best_fitness}, Avg Fitness: {avg_fitness}")
@@ -233,6 +253,18 @@ def main():
     plot_heatmaps(pop, archives, path)
     plot_pcas(pop, archives, path)
     plot_pca_best_rules(pop, archives, path)
+    
+    # -- Testing --
+    # extract best rules from each neuron archive and compose a network
+    params = []
+    for neuron in pop:
+        best_rule = archives[neuron.neuron_id].best_elite
+        params.append(best_rule["solution"])
+
+    pop = [Neuron(neuron_id=i, params=params[i]) for i in range(n_nodes)]
+    net = NCHL(nodes=config["nodes"], population=pop)
+    res = evaluate_team(net, n_episodes=10)
+    print(res)
     
 
     
