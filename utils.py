@@ -44,6 +44,8 @@ def plot_heatmaps(pop, archives, path):
         archive = archives[neuron.neuron_id]
         plt.sca(axs[neuron.neuron_id])  # Set the current axis
         grid_archive_heatmap(archive, cmap='Greens')
+        plt.xlabel('Temporal stability')
+        plt.ylabel('Signal complexity')
         plt.title(f'Neuron {neuron.neuron_id}')
 
     plt.tight_layout()
