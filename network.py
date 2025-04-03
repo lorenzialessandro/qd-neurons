@@ -158,6 +158,12 @@ class Neuron:
         return scaled_complexity
     
     def compute_params_complexity(self):
+        """Compute the complexity of the neuron based on its parameters
+        
+        This function measures the complexity of the neuron based on its Hebbian learning parameters.
+        - Higher values indicate a more complex neuron with more diverse learning rules
+        - Lower values suggest a simpler neuron with fewer learning rules
+        """
         params = torch.tensor([
             abs(self.pre_factor.item()),
             abs(self.post_factor.item()),
@@ -166,10 +172,10 @@ class Neuron:
         ])
         
         # Compute complexity based on the parameters
-        magnitude = torch.sum(params).item()
+        magnitude = torch.sum(params).item() # magnitude is defined as the sum of absolute values of parameters
         
         # Normalize between 0 and 1
-        norm_magnitude = min(1.0, magnitude)
+        norm_magnitude = min(1.0, magnitude / 4.0) # 4.0 is the maximum possible value (1 for each parameter)
         return norm_magnitude
     
     def compute_complexity(self):
