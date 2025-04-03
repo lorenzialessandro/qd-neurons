@@ -170,12 +170,13 @@ class Neuron:
             abs(self.correlation.item()),
             abs(self.decorrelation.item()),
         ])
+        #TODO: also include eta in params?
         
         # Compute complexity based on the parameters
         magnitude = torch.sum(params).item() # magnitude is defined as the sum of absolute values of parameters
         
         # Normalize between 0 and 1
-        norm_magnitude = min(1.0, magnitude)
+        norm_magnitude = min(1.0, magnitude) #TODO: check if normalization should be min(1.0, magnitude / 0.4) where 0.4 is the max value of params
         return norm_magnitude
     
     def compute_complexity(self):
