@@ -204,7 +204,7 @@ def run_qd_with_tweaks(config):
         neuron.neuron_id: GridArchive(
             solution_dim=5,  # 5 parameters per neuron
             dims=[10, 10],   # 10x10 grid 
-            ranges = [(0, 0.2), (0, 1)],
+            ranges = [(0, 1), (0, 1)],
             seed=config["seed"] + neuron.neuron_id  # Different seed per neuron
         ) for neuron in pop
     }
@@ -240,7 +240,7 @@ def run_qd_with_tweaks(config):
     # Main loop
     for iteration in tqdm(range(config["iterations"])):
         # Balance between exploration and exploitation
-        # Starts with 70% exploration and gradually reduces to 10% as training progresses
+        # Starts with high exploration and gradually shifts to exploitation
         exploration_rate = max(0.1, 0.7 - (iteration / config["iterations"]) * 0.6) 
         
         # 1. Update neuron parameters
@@ -290,6 +290,8 @@ def run_qd_with_tweaks(config):
             for neuron in net.all_neurons:
                 behavior, complexity = neuron.compute_new_descriptor()
                 # behavior, complexity = neuron.compute_descriptors()
+                print(f"Neuron {neuron.neuron_id}: {behavior}, {complexity}")
+                
                 descriptors[neuron.neuron_id].append([behavior, complexity])
                 objectives[neuron.neuron_id].append(fitness)
         
@@ -298,13 +300,6 @@ def run_qd_with_tweaks(config):
             neuron_fitness = objectives[neuron.neuron_id]
             if not neuron_fitness:  # Skip if no data for this neuron
                 continue
-                
-            # Use a combination of mean and max for more balanced optimization
-            weight = min(0.8, iteration / (config["iterations"] * 0.5)) # Gradually shift from mean to max
-            mean_fitness = np.mean(neuron_fitness)
-            max_fitness = np.max(neuron_fitness)
-            
-            combined_fitness = (1 - weight) * mean_fitness + weight * max_fitness
             
             # Alternatively, use 70th percentile fitness
             combined_fitness = np.percentile(neuron_fitness, 70)
@@ -331,8 +326,8 @@ def run_qd_with_tweaks(config):
         avg_fitness_history.append(iteration_avg)
         
         # Log progress
-        # if iteration % 10 == 0:
-        logger.info(f"Iteration {iteration}: Best={iteration_best:.1f}, Avg={iteration_avg:.1f}")
+        if iteration % 10 == 0:
+            logger.info(f"Iteration {iteration}: Best={iteration_best:.1f}, Avg={iteration_avg:.1f}")
         
         # Check for convergence
         if iteration_best >= config["threshold"]:
@@ -394,7 +389,7 @@ def run_qd_with_tweaks(config):
 if __name__ == "__main__":
     # Configuration
     config = {
-        "seed": 9,
+        "seed": 2,
         "nodes": [2, 4, 3],  # Input, hidden, output layers
         "iterations": 100,
         "threshold": -110,

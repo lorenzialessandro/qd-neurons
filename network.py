@@ -103,43 +103,9 @@ class Neuron:
         norm_chunk_var = min(1.0, chunk_var / 0.5)
         return norm_chunk_var
     
-    
-    def compute_complexity(self):
-        """
-        Measures the complexity of the activation sequence using a frequency-based analysis (Fourier Transform).
-        
-        This function analyzes the frequency components of activation patterns using Fast Fourier Transform (FFT) to measure how complex the activation signal is.
-        - Higher values indicate a more complex activation pattern with many frequency components
-        - Lower values suggest a simpler pattern dominated by fewer frequencies
-        """
-        
-        if not self.activations:
-            return 0.0
-        if len(self.activations) < 10:
-            return 0.5
-        
-        # Compute the complexity of the neuron
-        activations_tensor = torch.tensor(self.activations, device=self.device)
-        
-        # Apply Fast Fourier Transform (FFT) and take absolute values to get magnitude of frequency components
-        fft_components = torch.abs(torch.fft.fft(activations_tensor))
-        tot_power = torch.sum(fft_components) # Total power of the FFT components
-        
-        if tot_power == 0:
-            return 0.0
-        
-        norm_fft = fft_components / tot_power # Normalize by total power
-        cum_power = torch.cumsum(norm_fft, dim=0) # Cumulative sum of normalized FFT components
-        
-        # Count how many frequency components are needed to reach 80% of the total power
-        n_components = torch.sum(cum_power < 0.80).item()
-        max_components = len(self.activations) // 2
-        # Normalize between 0 and 1
-        norm_n_components = min(1.0, n_components / max_components)
-        return norm_n_components
         
     def compute_new_complexity(self):
-        """ (Improved version of complexity)
+        """
         Measures the complexity of the activation sequence using a frequency-based analysis (Fourier Transform).
         
         This function analyzes the frequency components of activation patterns using Fast Fourier Transform (FFT) to measure how complex the activation signal is.
@@ -191,6 +157,32 @@ class Neuron:
         
         return scaled_complexity
     
+    def compute_params_complexity(self):
+        params = torch.tensor([
+            abs(self.pre_factor.item()),
+            abs(self.post_factor.item()),
+            abs(self.correlation.item()),
+            abs(self.decorrelation.item()),
+        ])
+        
+        # Compute complexity based on the parameters
+        magnitude = torch.sum(params).item()
+        
+        # Normalize between 0 and 1
+        norm_magnitude = min(1.0, magnitude)
+        return norm_magnitude
+    
+    def compute_complexity(self):
+        # If not enough data, return middle complexity
+        if not self.weight_changes or len(self.weight_changes) < 5:
+            return 0.5
+        
+        weight_changes = torch.tensor(self.weight_changes, device=self.device)
+        weight_diversity = torch.std(weight_changes).item()
+        # Normalize between 0 and 1
+        norm_diversity = min(1.0, weight_diversity / 0.5)
+        return norm_diversity
+        
     def compute_new_descriptor(self):
         if not self.activations:
             return 0.0, 0.0
@@ -201,10 +193,9 @@ class Neuron:
         # Compute behavioral variability
         behavioral_variability = self.compute_behavioral_variability()
         # Compute complexity
-        complexity = self.compute_new_complexity()
+        complexity = self.compute_params_complexity()
         
         return behavioral_variability, complexity
-        
         
 
     def compute_descriptors(self):

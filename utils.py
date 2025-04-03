@@ -52,6 +52,46 @@ def plot_heatmaps(pop, archives, path):
     plt.savefig(f"{path}/all_neurons_heatmap.png")
     # plt.show()
 
+def plot_k_pcas(pop, archives, path, k=5):
+    """k are the best rules"""
+    fig, axs = plt.subplots(2, 5, figsize=(20, 8))
+    axs = axs.flatten()
+    for neuron in pop:
+        archive = archives[neuron.neuron_id]
+        plt.sca(axs[neuron.neuron_id])
+        
+        # Perform and plot PCA
+        params = []
+        fitnesses = []
+        data = archive.data()
+        # Create a list of (solution, objective) pairs for sorting
+        solution_objective_pairs = list(zip(data["solution"], data["objective"]))
+        # Sort by objective value
+        sorted_pairs = sorted(solution_objective_pairs, key=lambda pair: pair[1])
+        
+        k = min(k, len(sorted_pairs))
+        
+        # Get the k best solutions
+        k_solutions = [pair[0] for pair in sorted_pairs[:k]]
+        # Get the fitnesses of the k best solutions
+        k_fitnesses = [pair[1] for pair in sorted_pairs[:k]]
+        
+        scaler = StandardScaler()
+        params_scaled = scaler.fit_transform(k_solutions)
+        pca = PCA()  # apply PCA
+        pca_result = pca.fit_transform(params_scaled)
+        scatter = plt.scatter(
+            pca_result[:, 0], pca_result[:, 1], c=k_fitnesses, cmap='viridis')
+        
+        plt.xlabel(f"PC1")
+        plt.ylabel("PC2")
+        plt.title(f'Neuron {neuron.neuron_id}')
+        plt.colorbar(scatter, label='Fitness')
+  
+    plt.tight_layout()
+    plt.savefig(f"{path}/k_best_rules_pca.png")
+    # plt.show()
+            
 
 def plot_pcas(pop, archives, path):
     fig, axs = plt.subplots(2, 5, figsize=(20, 8))

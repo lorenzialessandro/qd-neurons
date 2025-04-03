@@ -17,6 +17,7 @@ from ribs.emitters import EvolutionStrategyEmitter
 
 from network import NCHL, Neuron
 from utils import *
+from analysis import *
 
 # Setup logging
 timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -204,8 +205,7 @@ def run_qd_with_tweaks(config):
         neuron.neuron_id: GridArchive(
             solution_dim=5,  # 5 parameters per neuron
             dims=[10, 10],   # 10x10 grid 
-            ranges=[(0, 1), (0, 0.8)],  # Normalized descriptor (0.8)
-            # ranges=[(2.5, 4), (0, 1)],
+            ranges=[(0, 1), (0, 1)], 
             seed=config["seed"] + neuron.neuron_id  # Different seed per neuron
         ) for neuron in pop
     }
@@ -290,6 +290,8 @@ def run_qd_with_tweaks(config):
             # Collect data for each neuron
             for neuron in net.all_neurons:
                 behavior, complexity = neuron.compute_new_descriptor()
+                # print(f"Neuron {neuron.neuron_id}: {behavior}, {complexity}")
+                
                 # behavior, complexity = neuron.compute_descriptors()
                 descriptors[neuron.neuron_id].append([behavior, complexity])
                 objectives[neuron.neuron_id].append(fitness)
@@ -332,8 +334,8 @@ def run_qd_with_tweaks(config):
         avg_fitness_history.append(iteration_avg)
         
         # Log progress
-        # if iteration % 10 == 0:
-        logger.info(f"Iteration {iteration}: Best={iteration_best:.1f}, Avg={iteration_avg:.1f}")
+        if iteration % 10 == 0:
+            logger.info(f"Iteration {iteration}: Best={iteration_best:.1f}, Avg={iteration_avg:.1f}")
         
         # Check for convergence
         if iteration_best >= config["threshold"]:
@@ -376,11 +378,14 @@ def run_qd_with_tweaks(config):
     # ------------ PLOTTING ------------
     
     # Save results
+
     plot_fitness_trends(best_fitness_history, avg_fitness_history, output_dir, config["threshold"])
     save_network_params(best_network, output_dir)
     plot_heatmaps(pop, archives, output_dir)
-    plot_pcas(pop, archives, output_dir)
-    plot_pca_best_rules(pop, archives, output_dir)
+    # plot_pcas(pop, archives, output_dir)
+    # plot_k_pcas(pop, archives, output_dir, k=5)
+    # plot_pca_best_rules(pop, archives, output_dir)
+    plot_analysis(pop, archives, output_dir)
     
     # log each archive stats
     for neuron in pop:
@@ -395,7 +400,7 @@ def run_qd_with_tweaks(config):
 if __name__ == "__main__":
     # Configuration
     config = {
-        "seed": 9,
+        "seed": 21,
         "nodes": [4, 4, 2],  # Input, hidden, output layers
         "iterations": 100,
         "threshold": 475,
