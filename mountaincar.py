@@ -17,6 +17,7 @@ from ribs.emitters import EvolutionStrategyEmitter
 
 from network import NCHL, Neuron
 from utils import *
+from analysis import *
 
 # Setup logging
 timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -204,7 +205,7 @@ def run_qd_with_tweaks(config):
         neuron.neuron_id: GridArchive(
             solution_dim=5,  # 5 parameters per neuron
             dims=[10, 10],   # 10x10 grid 
-            ranges = [(0, 1), (0, 1)],
+            ranges = [(0, 0.5), (0, 1)],
             seed=config["seed"] + neuron.neuron_id  # Different seed per neuron
         ) for neuron in pop
     }
@@ -290,7 +291,7 @@ def run_qd_with_tweaks(config):
             for neuron in net.all_neurons:
                 behavior, complexity = neuron.compute_new_descriptor()
                 # behavior, complexity = neuron.compute_descriptors()
-                print(f"Neuron {neuron.neuron_id}: {behavior}, {complexity}")
+                # print(f"Neuron {neuron.neuron_id}: {behavior}, {complexity}")
                 
                 descriptors[neuron.neuron_id].append([behavior, complexity])
                 objectives[neuron.neuron_id].append(fitness)
@@ -373,8 +374,7 @@ def run_qd_with_tweaks(config):
     plot_fitness_trends(best_fitness_history, avg_fitness_history, output_dir, config["threshold"])
     save_network_params(best_network, output_dir)
     plot_heatmaps(pop, archives, output_dir)
-    plot_pcas(pop, archives, output_dir)
-    plot_pca_best_rules(pop, archives, output_dir)
+    plot_analysis(pop, archives, output_dir)
     
     # log each archive stats
     for neuron in pop:

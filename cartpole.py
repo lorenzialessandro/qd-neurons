@@ -400,7 +400,7 @@ def run_qd_with_tweaks(config):
 if __name__ == "__main__":
     # Configuration
     config = {
-        "seed": 21,
+        "seed": 1,
         "nodes": [4, 4, 2],  # Input, hidden, output layers
         "iterations": 100,
         "threshold": 475,

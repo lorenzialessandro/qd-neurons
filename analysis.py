@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler
 from mpl_toolkits.mplot3d import Axes3D
 
 from network import NCHL, Neuron
@@ -103,20 +105,40 @@ def plot_pca_params(pop, data, path):
     plt.tight_layout()
     plt.savefig(f"{path}/pca_params.png")
     
+def plot_pca_top_k_rules(pop, data, path, k=5):
+    params = ['pre', 'post', 'corr', 'dec', 'eta']
+    
+    fig, axs = plt.subplots(2, 5, figsize=(20, 8))
+    axs = axs.flatten()
+    
+    for i, neuron in enumerate(pop):
+        df = data[data['neuron_id'] == neuron.neuron_id]
+        # Select top k rules based on fitness
+        df_sorted = df.sort_values(by='fit', ascending=False).head(k)
+        param_data = df_sorted[params]
+        
+        pca = PCA(n_components=3)
+        pca_data = pca.fit_transform(param_data)
+        
+        scatter = axs[i].scatter(pca_data[:, 0], pca_data[:, 1], c=df_sorted['fit'], cmap='viridis')
+        fig.colorbar(scatter, ax=axs[i], label='Fitness')
+        axs[i].set_xlabel(f'PCA1 ({pca.explained_variance_ratio_[0]:.2f})')
+        axs[i].set_ylabel(f'PCA2 ({pca.explained_variance_ratio_[1]:.2f})')
+        axs[i].set_title(f"Neuron {neuron.neuron_id}")
+    
+    plt.suptitle("PCA of top k rules")
+    plt.tight_layout()
+    plt.savefig(f"{path}/pca_top_k_rules.png")
     
 # --- Main function ---
 
 def plot_analysis(pop, archives, path):
     data = get_all_archive_data(pop, archives)
 
-    # 1. Correlation between parameters and fitness
-    plot_prams_correlation(pop, data, path)
-    # 2. Descriptors-Fitness relationship
-    plot_desc_correlation(pop, data, path)
-    # 3. PCA of parameters
-    plot_pca_params(pop, data, path)
     
-    # TODO:
-    # 4. Top performing rules
+    plot_prams_correlation(pop, data, path)     # 1. Correlation between parameters and fitness
+    plot_desc_correlation(pop, data, path)      # 2. Descriptors-Fitness relationship
+    plot_pca_params(pop, data, path)            # 3. PCA of parameters
+    plot_pca_top_k_rules(pop, data, path, 3)    # 4. PCA of top k rules
     
-    # 5. Clustering of rules
+    # 5. Clustering of rules ???
