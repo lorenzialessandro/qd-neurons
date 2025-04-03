@@ -205,7 +205,7 @@ def run_qd_with_tweaks(config):
         neuron.neuron_id: GridArchive(
             solution_dim=5,  # 5 parameters per neuron
             dims=[10, 10],   # 10x10 grid 
-            ranges = [(0, 0.5), (0, 1)],
+            ranges = [(0, 0.2), (0, 1)],
             seed=config["seed"] + neuron.neuron_id  # Different seed per neuron
         ) for neuron in pop
     }
@@ -242,7 +242,7 @@ def run_qd_with_tweaks(config):
     for iteration in tqdm(range(config["iterations"])):
         # Balance between exploration and exploitation
         # Starts with high exploration and gradually shifts to exploitation
-        exploration_rate = max(0.1, 0.7 - (iteration / config["iterations"]) * 0.6) 
+        exploration_rate = max(0.1, 0.7 - (iteration / config["iterations"]) * 0.4) 
         
         # 1. Update neuron parameters
         for neuron in pop:
@@ -391,10 +391,10 @@ if __name__ == "__main__":
     config = {
         "seed": 2,
         "nodes": [2, 4, 3],  # Input, hidden, output layers
-        "iterations": 100,
+        "iterations": 1000,
         "threshold": -110,
         "episodes": 10,
-        "n_teams": 10
+        "n_teams": 15
     }
     
     logger.info("Starting QD MountainCar Training")

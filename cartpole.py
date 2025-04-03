@@ -242,7 +242,8 @@ def run_qd_with_tweaks(config):
     for iteration in tqdm(range(config["iterations"])):
         # Balance between exploration and exploitation
         # Starts with 70% exploration and gradually reduces to 10% as training progresses
-        exploration_rate = max(0.1, 0.7 - (iteration / config["iterations"]) * 0.6) 
+        exploration_rate = max(0.1, 0.7 - (iteration / config["iterations"]) * 0.6) # linear decay : 0.7 -> 0.1 
+        # example: 0.7 - (0/100) * 0.6 = 0.7, 0.7 - (50/100) * 0.6 = 0.4, 0.7 - (100/100) * 0.6 = 0.1
         
         # 1. Update neuron parameters
         for neuron in pop:
@@ -259,11 +260,11 @@ def run_qd_with_tweaks(config):
                 fitnesses = archive_data["objective"]
                 
                 # Adaptive power scaling that increases pressure over time
-                power = 1 + 3 * (iteration / config["iterations"])
-                probabilities = np.power(fitnesses, power)
+                power = 1 + 3 * (iteration / config["iterations"]) # linear scaling from 1 to 4
+                probabilities = np.power(fitnesses, power) # fitnesses^power => higher fitnesses get higher probabilities
                 probabilities = probabilities / np.sum(probabilities)
                 
-                selected_idx = np.random.choice(len(fitnesses), p=probabilities)
+                selected_idx = np.random.choice(len(fitnesses), p=probabilities) 
                 solution = archive_data["solution"][selected_idx]
             
             # Apply solution parameters to neuron
@@ -324,7 +325,7 @@ def run_qd_with_tweaks(config):
         
         # 6. Select elite teams for next iteration
         evaluation_results.sort(key=lambda x: x[1]['mean_reward'], reverse=True)
-        elite_teams = [net for net, _ in evaluation_results[:max(2, n_teams//10)]]
+        elite_teams = [net for net, _ in evaluation_results[:max(2, n_teams//10)]] # Keep top 20% of teams as elites
         
         # Record metrics for this iteration
         iteration_best = max(all_fitness)
@@ -400,7 +401,7 @@ def run_qd_with_tweaks(config):
 if __name__ == "__main__":
     # Configuration
     config = {
-        "seed": 1,
+        "seed": 5,
         "nodes": [4, 4, 2],  # Input, hidden, output layers
         "iterations": 100,
         "threshold": 475,

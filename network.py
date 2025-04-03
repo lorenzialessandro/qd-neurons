@@ -175,7 +175,7 @@ class Neuron:
         magnitude = torch.sum(params).item() # magnitude is defined as the sum of absolute values of parameters
         
         # Normalize between 0 and 1
-        norm_magnitude = min(1.0, magnitude / 4.0) # 4.0 is the maximum possible value (1 for each parameter)
+        norm_magnitude = min(1.0, magnitude)
         return norm_magnitude
     
     def compute_complexity(self):
