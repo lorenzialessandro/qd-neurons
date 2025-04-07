@@ -72,6 +72,9 @@ class Neuron:
             torch.tensor(1.0, device=self.device) if self.correlation == 1. else (self.correlation * self.activation).to(self.device),
             self.decorrelation.to(self.device)
         )
+        
+    def get_rule(self):
+        return [self.pre_factor, self.post_factor, self.correlation, self.decorrelation, self.eta]
     
     def compute_behavioral_variability(self):
         """
