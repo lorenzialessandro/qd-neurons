@@ -11,8 +11,11 @@ from datetime import datetime
 import logging
 
 import gymnasium as gym
+from ribs.archives import GridArchive
+from ribs.schedulers import Scheduler
+from ribs.emitters import EvolutionStrategyEmitter
+from ribs.emitters import GaussianEmitter
 
-from qd import *
 from network import NCHL, Neuron
 from utils import *
 from analysis import *
@@ -67,7 +70,6 @@ def evaluate_team(network, n_episodes=10):
         'max_reward': max_reward,
         'std_reward': std_reward
     }
-         
 
 def evaluate_team_parallel(network_config):
     """Wrapper for parallel evaluation"""
@@ -75,7 +77,17 @@ def evaluate_team_parallel(network_config):
     return network, evaluate_team(network, n_episodes)
 
 def create_balanced_teams(pop, config, elites=None, n_teams=10):
-    """Create teams with a mix of elite and exploratory neurons"""
+    """Create teams with a mix of elite and exploratory neurons
+    
+    The goal is to create a balanced team with a mix of neurons that have performed well in the past and some random neurons.
+    - 30% of teams are directly taken from elite networks (elites are top-performing networks from previous iterations)
+    - 70% of teams are created by mixing neurons 
+        - [exploitation] 50% of neurons are top-performing neurons from previous iterations (for each layer, sorts neurons by their historical performance scores)
+        - [exploration]  50% of neurons are randomly selected from the remaining neurons
+        
+    This creates a good balance between exploration and exploitation, and helps in convergence.
+    As the process continues, the top-performing neurons are more likely to be selected, which helps in convergence.
+    """
     nets = []
     
     # Sort neurons by their performance in previous teams (if available)
@@ -97,7 +109,7 @@ def create_balanced_teams(pop, config, elites=None, n_teams=10):
     # Create remaining networks
     remaining = n_teams - len(nets)
     
-    # Create teams with random neurons
+    # New option: create teams with random neurons
     for _ in range(remaining):
         team_neurons = pop.copy()
         random.shuffle(team_neurons)
@@ -110,6 +122,52 @@ def create_balanced_teams(pop, config, elites=None, n_teams=10):
     
     return nets
     
+    for _ in range(remaining):
+        # For each network, mix some neurons from high-scoring ones and some random ones
+        team_neurons = []
+        nodes = config["nodes"]
+        
+        # Build team layer by layer
+        start_idx = 0
+        for layer_idx, node_count in enumerate(nodes):
+            layer_neurons = pop[start_idx:start_idx+node_count]
+            
+            # Sort layer neurons by score (higher is better)
+            sorted_neurons = sorted(
+                layer_neurons, 
+                key=lambda n: neuron_scores.get(n.neuron_id, 0), 
+                reverse=True
+            )
+            
+            # Take some top neurons and some random ones
+            if len(sorted_neurons) > 2:
+                # Take 50% top neurons
+                top_count = max(1, node_count // 2)
+                top_neurons = sorted_neurons[:top_count]
+                
+                # Take 50% random neurons
+                remaining_neurons = sorted_neurons[top_count:]
+                random.shuffle(remaining_neurons)
+                random_neurons = remaining_neurons[:node_count-top_count]
+                
+                # Combine and shuffle
+                combined = top_neurons + random_neurons
+                random.shuffle(combined)
+                team_neurons.extend(combined)
+            else:
+                # For very small layers, just use all neurons
+                team_neurons.extend(sorted_neurons)
+            
+            start_idx += node_count
+        
+        # Create network
+        net = NCHL(nodes=nodes, population=team_neurons)
+        nets.append(net)
+    
+    # Store the neuron scores for next call
+    create_balanced_teams.neuron_scores = neuron_scores
+    
+    return nets
 
 def create_nets(pop, config, n_teams=10):
     nets = []
@@ -142,17 +200,48 @@ def run_qd_with_tweaks(config):
     # Create initial neuron population
     pop = [Neuron(neuron_id=i) for i in range(n_nodes)]
     
+    # Initialize QD components
     # Create archives for each neuron
     archives = {
-        neuron.neuron_id: NeuronArchive(
+        neuron.neuron_id: GridArchive(
+            solution_dim=5,  # 5 parameters per neuron
             dims=[10, 10],   # 10x10 grid 
-            ranges = [(0, 1), (-1, 1)],
-            sigma=0.1,
-            seed=config["seed"] + neuron.neuron_id 
+            ranges=[(0, 1), (-1, 1)], 
+            seed=config["seed"] + neuron.neuron_id  # Different seed per neuron
         ) for neuron in pop
     }
     
-    # initialize_archives(archives, pop) # TODO
+    # Create emitters for each neuron
+    # emitters = {
+    #     neuron.neuron_id: EvolutionStrategyEmitter(
+    #         archive=archives[neuron.neuron_id],
+    #         x0=np.append(np.random.uniform(-0.1, 0.1, 4), 0.005),  # Init values
+    #         sigma0=0.1,  
+    #         batch_size=1,  
+    #         seed=config["seed"] + neuron.neuron_id
+    #     ) for neuron in pop
+    # }
+    emitters = {
+        neuron.neuron_id: GaussianEmitter(
+            archive=archives[neuron.neuron_id],
+            sigma = 0.2,
+            initial_solutions = np.array([
+                np.append(np.random.uniform(-0.5, 0.5, 4), 0.01)
+                for _ in range(1)
+            ]),
+            batch_size = 1,
+            seed=config["seed"] + neuron.neuron_id
+        ) for neuron in pop
+    }
+            
+    
+    # Create schedulers for each neuron
+    schedulers = {
+        neuron.neuron_id: Scheduler(
+            emitters=[emitters[neuron.neuron_id]],
+            archive=archives[neuron.neuron_id]
+        ) for neuron in pop
+    }
     
     # Set up multiprocessing
     num_workers = multiprocessing.cpu_count()
@@ -173,16 +262,17 @@ def run_qd_with_tweaks(config):
         # 1. Update neuron parameters
         for neuron in pop:
             archive = archives[neuron.neuron_id]
-    
+            
+            solution = schedulers[neuron.neuron_id].ask()[0]
             if random.random() < exploration_rate or archive.empty:
                 # Exploration: use emitter and take random solution
-                solution = archive.ask()
+                solution = solution
                 # print(f"Neuron {neuron.neuron_id} exploring: {solution}")
             else:
                 # Exploitation: select good solution from archive
                 # Uses fitness-proportional selection to choose the best neurons with increasing selection pressure
                 archive_data = archive.data()
-                fitnesses = archive_data["fitness"]
+                fitnesses = archive_data["objective"]
                 
                 # Adaptive power scaling that increases pressure over time
                 power = 1 + 3 * (iteration / config["iterations"]) # linear scaling from 1 to 4
@@ -190,7 +280,7 @@ def run_qd_with_tweaks(config):
                 probabilities = probabilities / np.sum(probabilities)
                 
                 selected_idx = np.random.choice(len(fitnesses), p=probabilities) 
-                solution = archive_data["rule"][selected_idx]
+                solution = archive_data["solution"][selected_idx]
             
             # Apply solution parameters to neuron
             neuron.set_params(solution)
@@ -243,10 +333,9 @@ def run_qd_with_tweaks(config):
             avg_complexity = np.mean([d[1] for d in descriptors[neuron.neuron_id]])
             
             # Update archive
-            archives[neuron.neuron_id].tell(
-                behavior=[avg_behavior, avg_complexity], 
-                fitness=combined_fitness, 
-                rule=neuron.get_rule() # neuron.params
+            schedulers[neuron.neuron_id].tell(
+                objective=[combined_fitness],
+                measures=[(avg_behavior, avg_complexity)]
             )
         
         # 6. Select elite teams for next iteration
@@ -277,13 +366,13 @@ def run_qd_with_tweaks(config):
 
     plot_fitness_trends(best_fitness_history, avg_fitness_history, output_dir, config["threshold"])
     plot_heatmaps(pop, archives, output_dir)
-    # plot_analysis(pop, archives, output_dir)
+    plot_analysis(pop, archives, output_dir)
     
     # log each archive stats
     logger.info("Final archive stats:")
     for neuron in pop:
         archive = archives[neuron.neuron_id]
-        logger.info(f"Neuron {neuron.neuron_id}: {archive.coverage()}")
+        logger.info(f"Neuron {neuron.neuron_id}: {archive.stats}")
     
     return {
         'best_fitness': best_fitness_history,
@@ -293,7 +382,7 @@ def run_qd_with_tweaks(config):
 if __name__ == "__main__":
     # Configuration
     config = {
-        "seed": 12,
+        "seed": 10,
         "nodes": [4, 4, 2],  # Input, hidden, output layers
         "iterations": 100,
         "threshold": 475,
