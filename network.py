@@ -202,7 +202,8 @@ class Neuron:
         # Compute complexity
         complexity = self.compute_params_complexity()
         
-        return behavioral_variability, complexity
+        # return behavioral_variability, complexity
+        return behavioral_variability, self.eta
         
 
     def compute_descriptors(self):

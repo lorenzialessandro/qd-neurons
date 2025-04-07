@@ -205,7 +205,7 @@ def run_qd_with_tweaks(config):
         neuron.neuron_id: GridArchive(
             solution_dim=5,  # 5 parameters per neuron
             dims=[10, 10],   # 10x10 grid 
-            ranges = [(0, 0.2), (0, 1)],
+            ranges = [(0, 0.5), (0, 1)],
             seed=config["seed"] + neuron.neuron_id  # Different seed per neuron
         ) for neuron in pop
     }
@@ -214,8 +214,8 @@ def run_qd_with_tweaks(config):
     emitters = {
         neuron.neuron_id: EvolutionStrategyEmitter(
             archive=archives[neuron.neuron_id],
-            x0=np.append(np.random.uniform(-0.1, 0.1, 4), 0.005),  # Init values
-            sigma0=0.1,  
+            x0=np.append(np.random.uniform(-1, 1, 4), 0.01),  # Init values
+            sigma0=0.2,  
             batch_size=1,  
             seed=config["seed"] + neuron.neuron_id
         ) for neuron in pop
@@ -242,7 +242,10 @@ def run_qd_with_tweaks(config):
     for iteration in tqdm(range(config["iterations"])):
         # Balance between exploration and exploitation
         # Starts with high exploration and gradually shifts to exploitation
-        exploration_rate = max(0.1, 0.7 - (iteration / config["iterations"]) * 0.4) 
+        if iteration < config["iterations"] * 0.5:  # First 20% of iterations
+            exploration_rate = 0.9  # Very high exploration
+        else:
+            exploration_rate = max(0.1, 0.7 - (iteration / config["iterations"]) * 0.4) 
         
         # 1. Update neuron parameters
         for neuron in pop:
@@ -259,8 +262,13 @@ def run_qd_with_tweaks(config):
                 fitnesses = archive_data["objective"]
                 
                 # Adaptive power scaling that increases pressure over time
+                # First shift all fitnesses to be positive
+                min_fitness = np.min(fitnesses)
+                shifted_fitnesses = fitnesses - min_fitness + 1e-10  # Small epsilon to avoid zeros
+                                
+                # Apply power scaling
                 power = 1 + 3 * (iteration / config["iterations"])
-                probabilities = np.power(-fitnesses, power)
+                probabilities = np.power(shifted_fitnesses, power)
                 probabilities = probabilities / np.sum(probabilities)
                 
                 selected_idx = np.random.choice(len(fitnesses), p=probabilities)
@@ -391,10 +399,10 @@ if __name__ == "__main__":
     config = {
         "seed": 2,
         "nodes": [2, 4, 3],  # Input, hidden, output layers
-        "iterations": 1000,
+        "iterations": 200,
         "threshold": -110,
-        "episodes": 10,
-        "n_teams": 15
+        "episodes": 30,
+        "n_teams": 10
     }
     
     logger.info("Starting QD MountainCar Training")

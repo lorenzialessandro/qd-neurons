@@ -14,6 +14,7 @@ import gymnasium as gym
 from ribs.archives import GridArchive
 from ribs.schedulers import Scheduler
 from ribs.emitters import EvolutionStrategyEmitter
+from ribs.emitters import GaussianEmitter
 
 from network import NCHL, Neuron
 from utils import *
@@ -205,21 +206,34 @@ def run_qd_with_tweaks(config):
         neuron.neuron_id: GridArchive(
             solution_dim=5,  # 5 parameters per neuron
             dims=[10, 10],   # 10x10 grid 
-            ranges=[(0, 1), (0, 1)], 
+            ranges=[(0, 1), (-1, 1)], 
             seed=config["seed"] + neuron.neuron_id  # Different seed per neuron
         ) for neuron in pop
     }
     
     # Create emitters for each neuron
+    # emitters = {
+    #     neuron.neuron_id: EvolutionStrategyEmitter(
+    #         archive=archives[neuron.neuron_id],
+    #         x0=np.append(np.random.uniform(-0.1, 0.1, 4), 0.005),  # Init values
+    #         sigma0=0.1,  
+    #         batch_size=1,  
+    #         seed=config["seed"] + neuron.neuron_id
+    #     ) for neuron in pop
+    # }
     emitters = {
-        neuron.neuron_id: EvolutionStrategyEmitter(
+        neuron.neuron_id: GaussianEmitter(
             archive=archives[neuron.neuron_id],
-            x0=np.append(np.random.uniform(-0.1, 0.1, 4), 0.005),  # Init values
-            sigma0=0.1,  
-            batch_size=1,  
+            sigma = 0.2,
+            initial_solutions = np.array([
+                np.append(np.random.uniform(-0.5, 0.5, 4), 0.01)
+                for _ in range(1)
+            ]),
+            batch_size = 1,
             seed=config["seed"] + neuron.neuron_id
         ) for neuron in pop
     }
+            
     
     # Create schedulers for each neuron
     schedulers = {
@@ -253,6 +267,7 @@ def run_qd_with_tweaks(config):
             if random.random() < exploration_rate or archive.empty:
                 # Exploration: use emitter and take random solution
                 solution = solution
+                # print(f"Neuron {neuron.neuron_id} exploring: {solution}")
             else:
                 # Exploitation: select good solution from archive
                 # Uses fitness-proportional selection to choose the best neurons with increasing selection pressure
@@ -345,55 +360,21 @@ def run_qd_with_tweaks(config):
     # Clean up
     pool.close()
     pool.join()
-    
-    # ------------ FINAL NETWORK ------------
-    # TODO: change this strategy of creating final network
-    # Create final network with best parameters from archives
-    best_neurons = []
-    for neuron in pop:
-        archive = archives[neuron.neuron_id]
-        if archive.empty:
-            # Use current neuron parameters if archive is empty
-            best_neuron = neuron
-        else:
-            # Get best parameters from archive
-            best_idx = np.argmax(archive.data()["objective"])
-            best_params = archive.data()["solution"][best_idx]
-            
-            # Create new neuron with these parameters
-            best_neuron = Neuron(neuron_id=neuron.neuron_id)
-            best_neuron.set_params(best_params)
-        
-        best_neurons.append(best_neuron)
-    
-    
-    # ------------ TESTING ------------
-    #TODO: change this testing strategy
-    
-    # Create best network
-    best_network = NCHL(nodes=network_topology, population=best_neurons)
-    # Evaluate final network
-    final_result = evaluate_team(best_network, n_episodes=100)
-    logger.info(f"Final performance: {final_result}")
-    
-    # ------------ PLOTTING ------------
+    logger.info("QD training completed.")
     
     # Save results
 
     plot_fitness_trends(best_fitness_history, avg_fitness_history, output_dir, config["threshold"])
-    save_network_params(best_network, output_dir)
     plot_heatmaps(pop, archives, output_dir)
-    # plot_pcas(pop, archives, output_dir)
-    # plot_k_pcas(pop, archives, output_dir, k=5)
-    # plot_pca_best_rules(pop, archives, output_dir)
     plot_analysis(pop, archives, output_dir)
     
     # log each archive stats
+    logger.info("Final archive stats:")
     for neuron in pop:
         archive = archives[neuron.neuron_id]
         logger.info(f"Neuron {neuron.neuron_id}: {archive.stats}")
     
-    return best_network, {
+    return {
         'best_fitness': best_fitness_history,
         'avg_fitness': avg_fitness_history
     }
@@ -401,7 +382,7 @@ def run_qd_with_tweaks(config):
 if __name__ == "__main__":
     # Configuration
     config = {
-        "seed": 5,
+        "seed": 10,
         "nodes": [4, 4, 2],  # Input, hidden, output layers
         "iterations": 100,
         "threshold": 475,
@@ -413,4 +394,4 @@ if __name__ == "__main__":
     logger.info(f"Configuration: {config}")
     
     # Run QD training
-    best_network, history = run_qd_with_tweaks(config)
+    history = run_qd_with_tweaks(config)
