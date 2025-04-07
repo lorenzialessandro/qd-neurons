@@ -6,6 +6,8 @@ from tqdm import tqdm
 from collections import defaultdict
 import gymnasium as gym
 
+import matplotlib.pyplot as plt
+
 from network import NCHL, Neuron
 
 class NeuronArchive:
@@ -42,7 +44,9 @@ class NeuronArchive:
         return mutated_rule 
         
     def _valid_solution(self, solution):
-        if len(solution) != 2:
+        if not isinstance(solution, dict):
+            return False
+        if "rule" not in solution or "fitness" not in solution:
             return False
         if len(solution["rule"]) != self.solution_dim:
             return False
@@ -113,6 +117,81 @@ class NeuronArchive:
                 "fitness": fitness
             }
         )
+        
+    def visualize(self, ax=None, cmap='Greens', transpose_measures=False, 
+              aspect='auto', vmin=None, vmax=None, cbar=True, 
+              cbar_kwargs=None, rasterized=False, pcm_kwargs=None):
+
+        if ax is None:
+            ax = plt.gca()
+        
+        # Retrieve data from archive
+        lower_bounds = [self.ranges[0][0], self.ranges[1][0]]
+        upper_bounds = [self.ranges[0][1], self.ranges[1][1]]
+        x_dim, y_dim = self.dims
+        
+        # Create boundary arrays
+        x_bounds = np.linspace(lower_bounds[0], upper_bounds[0], x_dim + 1)
+        y_bounds = np.linspace(lower_bounds[1], upper_bounds[1], y_dim + 1)
+        
+        # Color for each cell in the heatmap
+        colors = np.full((y_dim, x_dim), np.nan)
+        
+        # Extract objective values and positions
+        if not self.empty():
+            positions = list(self.archive.keys())
+            objectives = [self.archive[pos]["fitness"] for pos in positions]
+            
+            # Fill the colors array
+            for pos, obj in zip(positions, objectives):
+                x_idx, y_idx = pos
+                colors[y_idx, x_idx] = obj
+        
+        if transpose_measures:
+            # Transpose by swapping the x and y boundaries and flipping the bounds
+            x_bounds, y_bounds = y_bounds, x_bounds
+            lower_bounds = np.flip(lower_bounds)
+            upper_bounds = np.flip(upper_bounds)
+            colors = colors.T
+        
+        # Set axis limits
+        ax.set_xlim(lower_bounds[0], upper_bounds[0])
+        ax.set_ylim(lower_bounds[1], upper_bounds[1])
+        ax.set_aspect(aspect)
+        
+        # Set labels
+        ax.set_xlabel(f"Behavior 1 [{lower_bounds[0]}, {upper_bounds[0]}]")
+        ax.set_ylabel(f"Behavior 2 [{lower_bounds[1]}, {upper_bounds[1]}]")
+        
+        # Create the plot
+        if pcm_kwargs is None:
+            pcm_kwargs = {}
+        
+        if vmin is None and not np.isnan(colors).all():
+            vmin = np.nanmin(colors)
+        
+        if vmax is None and not np.isnan(colors).all():
+            vmax = np.nanmax(colors)
+        
+        t = ax.pcolormesh(x_bounds, y_bounds, colors, cmap=cmap, 
+                        vmin=vmin, vmax=vmax, rasterized=rasterized, 
+                        **pcm_kwargs)
+        
+        # Create color bar
+        if cbar:
+            if cbar_kwargs is None:
+                cbar_kwargs = {}
+            cbar = plt.colorbar(t, ax=ax, **cbar_kwargs)
+            cbar.set_label('Fitness')
+        
+        return ax
+
+    def set_cbar(mappable, ax, show_cbar=True, cbar_kwargs=None):
+        """Helper function to set the colorbar."""
+        if show_cbar:
+            if cbar_kwargs is None:
+                cbar_kwargs = {}
+            plt.colorbar(mappable, ax=ax, **cbar_kwargs)
 
 # -----------------------------------------------------
 # -----------------------------------------------------    
@@ -193,8 +272,13 @@ def main():
         ) for i, neuron in enumerate(pop)
     }
     
+    
+    # Tracking metrics
+    best_fitness_history = []
+    avg_fitness_history = []
+    
     # Loop
-    for iteration in range(5):
+    for iteration in tqdm(range(config["iterations"])):
         for neuron in pop:
             archive = archives[neuron.neuron_id]
             # Ask
@@ -241,9 +325,41 @@ def main():
                 fitness=combined_fitness, 
                 rule=neuron.params #TODO: add get_params() function in network.py
             )
+           
+        
+        # Record metric for this iteration 
+        iteration_best = max(all_fitness)
+        iteration_avg = np.mean(all_fitness)
+        # Store best and average fitness
+        best_fitness_history.append(iteration_best)
+        avg_fitness_history.append(iteration_avg)
 
-        print(f"Iteration {iteration + 1} completed.")
+        # Log progress
+        if iteration % 10 == 0:
+            print(f"Iteration {iteration}: Best={iteration_best:.1f}, Avg={iteration_avg:.1f}")
         
+        # Check for convergence
+        if iteration_best >= config["threshold"]:
+            print(f"Task solved at iteration {iteration}!")
         
+    # Visualize the archive for each neuron
+    for neuron in pop:
+        archive = archives[neuron.neuron_id]
+        fig, ax = plt.subplots()
+        archive.visualize(ax=ax)
+        plt.title(f"Neuron {neuron.neuron_id} Archive")
+        plt.tight_layout()
+        plt.show()
+    
+    # Plot best and average fitness over iterations
+    plt.figure(figsize=(10, 5))
+    plt.plot(best_fitness_history, label='Best Fitness')
+    plt.plot(avg_fitness_history, label='Average Fitness')
+    plt.xlabel('Iteration')
+    plt.ylabel('Fitness')
+    plt.title('Fitness over Iterations')
+    plt.legend()
+    plt.show()    
+    
 if __name__ == "__main__":
     main()
