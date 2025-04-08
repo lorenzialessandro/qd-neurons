@@ -35,10 +35,33 @@ def plot_archive_heatmap(archive: GridArchive, output_dir):
     # plt.savefig(f'{output_dir}/archive_heatmap.png')
     plt.show()
 
-
-def plot_heatmaps(pop, archives, path):
+def plot_params(pop, path):
+    """For each neuron plot final params value as column"""
+    labels = ['pre', 'post', 'corr', 'dec', 'eta']
+    colors = ['b', 'g', 'r', 'c', 'm']
     fig, axs = plt.subplots(2, 5, figsize=(20, 8))
     axs = axs.flatten()
+    
+    for neuron in pop:
+        plt.sca(axs[neuron.neuron_id])
+        params = neuron.get_rule()
+    
+        bars = plt.bar(range(len(params)), params, color=colors) # Plot params as bars
+    
+        plt.xticks(range(len(params)), labels)
+        plt.title(f"Neuron {neuron.neuron_id}")
+        plt.ylim([-1.2, 1.2])
+            
+        plt.axhline(y=0, color='k', linestyle='-', alpha=0.3)    
+        plt.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig(f"{path}/all_neurons_params.png")
+
+def plot_heatmaps(pop, archives, path, init=False):
+    fig, axs = plt.subplots(2, 5, figsize=(20, 8))
+    axs = axs.flatten()
+    init = "_init" if init else ""
 
     for neuron in pop:
         archive = archives[neuron.neuron_id]
@@ -51,7 +74,7 @@ def plot_heatmaps(pop, archives, path):
         plt.title(f'Neuron {neuron.neuron_id}')
 
     plt.tight_layout()
-    plt.savefig(f"{path}/all_neurons_heatmap.png")
+    plt.savefig(f"{path}/all_neurons_heatmap{init}.png")
     # plt.show()
 
 def plot_k_pcas(pop, archives, path, k=5):

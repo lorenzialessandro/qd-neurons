@@ -33,22 +33,30 @@ class NeuronArchive:
         
         self.archive = {}     
     
-    def _get_random_rule(self):
+    def get_random_rule(self):
         """Generate a random Hebbian rule."""
-        rule = [random.uniform(-1, 1) for _ in range(self.solution_dim)]
+        rule = [random.uniform(-1, 1) for _ in range(self.solution_dim - 1)] # A, B, C, D in [-1, 1]
+        rule.append(random.uniform(0, 1))  # eta is in [0, 1]
         return rule
     
     def _mutate_rule(self, rule):
         """Mutate a given rule using Gaussian mutation."""
         mutated_rule = []
-        for x in rule:
+        
+        # The first 4 values are Hebbian parameters
+        for i in range(len(rule) - 1):
             # Apply Gaussian mutation
-            mutated_value = x + random.gauss(0, self.sigma)
+            mutated_value = rule[i] + random.gauss(0, self.sigma)
             # Ensure the mutated value is within the range [-1, 1]
             mutated_value = max(-1, min(mutated_value, 1))
             mutated_rule.append(mutated_value)
-            
-        return mutated_rule 
+        
+        # The last value is the learning rate (eta)
+        eta = rule[-1] + random.gauss(0, self.sigma * 0.5)  # Use smaller sigma for eta
+        eta = max(0, min(eta, 1))  # Different bounds for learning rate
+        mutated_rule.append(eta)
+                
+        return mutated_rule
         
     def _valid_solution(self, solution):
         """Check if the solution is valid."""
@@ -93,7 +101,7 @@ class NeuronArchive:
         """
         # Select a random solution from the archive
         if self.empty():
-            return self._get_random_rule()
+            return self.get_random_rule()
         
         # Select a random position from the archive
         pos = random.choice(list(self.archive.keys()))
@@ -133,7 +141,8 @@ class NeuronArchive:
             pos=self._discretize_behavior(behavior), 
             solution={
                 "rule": rule,
-                "fitness": fitness
+                "fitness": fitness,
+                "behavior": behavior
             }
         )
         
@@ -196,7 +205,7 @@ class NeuronArchive:
         
         # Set labels
         ax.set_xlabel(f"Stability [{lower_bounds[0]}, {upper_bounds[0]}]")
-        ax.set_ylabel(f"Eta [{lower_bounds[1]}, {upper_bounds[1]}]")
+        ax.set_ylabel(f"Learning Rate [{lower_bounds[1]}, {upper_bounds[1]}]")
         
         # Create the plot
         if pcm_kwargs is None:
@@ -217,7 +226,7 @@ class NeuronArchive:
             if cbar_kwargs is None:
                 cbar_kwargs = {}
             cbar = plt.colorbar(t, ax=ax, **cbar_kwargs)
-            cbar.set_label('Fitness')
+            # cbar.set_label('Fitness')
         
         return ax
   
