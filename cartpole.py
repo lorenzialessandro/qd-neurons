@@ -66,7 +66,8 @@ def evaluate_team(network, n_episodes=10):
     return {
         'mean_reward': mean_reward, 
         'max_reward': max_reward,
-        'std_reward': std_reward
+        'std_reward': std_reward,
+        'rewards': rewards
     }
          
 def evaluate_team_parallel(network_config):
@@ -356,10 +357,15 @@ def run_qd_with_tweaks(config):
     best_network = elite_teams[0]
     solving_result = evaluate_team(best_network, n_episodes=100)
     mean_reward = solving_result['mean_reward']
+    rewards = solving_result['rewards']
+    
     if mean_reward >= config["threshold"]:
         logger.info("Best network solved the task!")
     else:
         logger.info("Best network did not solve the task.")
+        
+    # Plot rewards
+    plot_rewards(rewards, output_dir, config["threshold"])
     
     return {
         'best_fitness': best_fitness_history,
@@ -369,9 +375,9 @@ def run_qd_with_tweaks(config):
 if __name__ == "__main__":
     # Configuration
     config = {
-        "seed": 4,
+        "seed": 10,
         "nodes": [4, 4, 2],  # Input, hidden, output layers
-        "iterations": 100,
+        "iterations": 200,
         "threshold": 475,
         "episodes": 10,
         "n_teams": 10

@@ -39,16 +39,16 @@ class Neuron:
         self.set_hebbian_params(params[0], params[1], params[2], params[3])
         self.set_eta(params[4])
     
-    def set_hebbian_params(self, pre: float, post: float, corr: float, decorr: float):
+    def set_hebbian_params(self, pre, post, corr, decorr):
         """Set the Hebbian learning parameters for this neuron."""
-        self.pre_factor = torch.tensor(pre, device=self.device)
-        self.post_factor = torch.tensor(post, device=self.device)
-        self.correlation = torch.tensor(corr, device=self.device)
-        self.decorrelation = torch.tensor(decorr, device=self.device)
+        self.pre_factor = pre.clone().detach().to(self.device) if isinstance(pre, torch.Tensor) else torch.tensor(pre, device=self.device)
+        self.post_factor = post.clone().detach().to(self.device) if isinstance(post, torch.Tensor) else torch.tensor(post, device=self.device)
+        self.correlation = corr.clone().detach().to(self.device) if isinstance(corr, torch.Tensor) else torch.tensor(corr, device=self.device)
+        self.decorrelation = decorr.clone().detach().to(self.device) if isinstance(decorr, torch.Tensor) else torch.tensor(decorr, device=self.device)
 
-    def set_eta(self, eta: float):
+    def set_eta(self, eta):
         """Set the learning rate for this neuron."""
-        self.eta = torch.tensor(eta, device=self.device)
+        self.eta = eta.clone().detach().to(self.device) if isinstance(eta, torch.Tensor) else torch.tensor(eta, device=self.device)
 
     def set_activation(self, activation):
         """Set the current activation value of the neuron."""
@@ -65,7 +65,6 @@ class Neuron:
     #     )
     
     def get_hebbian_terms(self):
-        """Get the Hebbian terms for weight updates."""
         return (
             (self.pre_factor * self.activation).to(self.device),
             (self.post_factor * self.activation).to(self.device),
@@ -345,28 +344,26 @@ class NCHL(nn.Module):
             pre_terms = torch.stack([torch.stack(n.get_hebbian_terms()).to(self.device) for n in pre_neurons])
             post_terms = torch.stack([torch.stack(n.get_hebbian_terms()).to(self.device) for n in post_neurons])
             
-            # Prepare activations 
-            pre_activations = torch.stack([n.activation.to(self.device) for n in pre_neurons])
-            post_activations = torch.stack([n.activation.to(self.device) for n in post_neurons])
-            
             # Create weight update matrix
             pre_contribution = pre_terms[:, 0].unsqueeze(0).expand(len(post_neurons), -1).to(self.device)
             post_contribution = post_terms[:, 1].unsqueeze(1).expand(-1, len(pre_neurons)).to(self.device)
             
             # Correlation terms 
-            corr_mask = ((pre_terms[:, 2] != 1.).unsqueeze(0) & (post_terms[:, 2] != 1.).unsqueeze(1)).to(self.device)
+            corr_i = pre_terms[:, 2].unsqueeze(0).to(self.device)
+            corr_j = post_terms[:, 2].unsqueeze(1).to(self.device)
             corr_contrib = torch.where(
-                corr_mask,
-                pre_terms[:, 2].unsqueeze(0).to(self.device) * post_terms[:, 2].unsqueeze(1).to(self.device),
-                torch.zeros_like(pre_contribution, device=self.device)
+                (corr_i == 1.) & (corr_j == 1.), 
+                torch.zeros_like(pre_contribution, device=self.device),
+                corr_i * corr_j
             )
             
             # Decorrelation terms 
-            decorr_mask = ((pre_terms[:, 3] != 1.).unsqueeze(0) & (post_terms[:, 3] != 1.).unsqueeze(1)).to(self.device)
+            decorr_i = pre_terms[:, 3].unsqueeze(0).to(self.device)
+            decorr_j = post_terms[:, 3].unsqueeze(1).to(self.device)
             decorr_contrib = torch.where(
-                decorr_mask,
-                pre_terms[:, 3].unsqueeze(0).to(self.device) * post_terms[:, 3].unsqueeze(1).to(self.device),
-                torch.zeros_like(pre_contribution, device=self.device)
+                (decorr_i == 1.) & (decorr_j == 1.),
+                torch.zeros_like(pre_contribution, device=self.device),
+                decorr_i * decorr_j
             )
             
             # Combine all contributions 

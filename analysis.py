@@ -12,9 +12,15 @@ from network import NCHL, Neuron
 
 def get_archive_data(archive, neuron_id):
     data = archive.data()
-    solutions = data["solution"]
-    objectives = data["objective"]
-    measures = data["measures"]
+    
+    solutions = []
+    objectives = []
+    measures = []
+
+    for key, value in data.items():
+        solutions.append(value['rule'])
+        objectives.append(value['fitness'])
+        measures.append(value['behavior'])
     
     all_data = []
     
@@ -45,7 +51,7 @@ def get_all_archive_data(pop, archives):
     
     all_data = pd.concat(all_data)
     return all_data
-        
+                   
 def plot_prams_correlation(pop, data, path):
     params = ['pre', 'post', 'corr', 'dec', 'eta']
     
@@ -135,7 +141,8 @@ def plot_pca_top_k_rules(pop, data, path, k=5):
 def plot_analysis(pop, archives, path):
     data = get_all_archive_data(pop, archives)
 
-    
+    plot_params(pop, data, path)            # 0. Parameters vs Fitness
+    exit()
     plot_prams_correlation(pop, data, path)     # 1. Correlation between parameters and fitness
     plot_desc_correlation(pop, data, path)      # 2. Descriptors-Fitness relationship
     plot_pca_params(pop, data, path)            # 3. PCA of parameters

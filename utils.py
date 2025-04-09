@@ -58,10 +58,12 @@ def plot_params(pop, path):
     plt.tight_layout()
     plt.savefig(f"{path}/all_neurons_params.png")
 
-def plot_heatmaps(pop, archives, path, init=False):
-    fig, axs = plt.subplots(2, 5, figsize=(20, 8))
+def plot_heatmaps(pop, archives, path, suffix=None):
+    suffix = suffix if suffix else ""
+    cols = 5 # number of columns
+    rows = len(pop) // cols + (len(pop) % cols > 0) # number of rows
+    fig, axs = plt.subplots(rows, cols, figsize=(4*cols, 4*rows))
     axs = axs.flatten()
-    init = "_init" if init else ""
 
     for neuron in pop:
         archive = archives[neuron.neuron_id]
@@ -74,7 +76,7 @@ def plot_heatmaps(pop, archives, path, init=False):
         plt.title(f'Neuron {neuron.neuron_id}')
 
     plt.tight_layout()
-    plt.savefig(f"{path}/all_neurons_heatmap{init}.png")
+    plt.savefig(f"{path}/all_neurons_heatmap{suffix}.png")
     # plt.show()
 
 def plot_k_pcas(pop, archives, path, k=5):
@@ -154,6 +156,21 @@ def plot_pcas(pop, archives, path):
     plt.savefig(f"{path}/all_neurons_pca.png")
     # plt.show()
 
+def plot_rewards(rewards, path, threshold):
+    plt.figure(figsize=(10, 6))
+    generations = np.arange(len(rewards))
+    # Plot rewards
+    plt.plot(generations, rewards, 'b-', label="Rewards")
+    # Plot threshold
+    plt.axhline(y=threshold, color='r', linestyle='--', label="Threshold")
+    
+    plt.title("Rewards")
+    plt.xlabel("Generation")
+    plt.ylabel("Reward")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f'{path}/rewards.png')
+    
 
 def plot_fitness_trends(best_fitness_per_iteration, avg_fitness_per_iteration, path, threshold):
     plt.figure(figsize=(10, 6))

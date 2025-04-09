@@ -396,6 +396,7 @@ def run_qd_with_tweaks(config):
     best_network = elite_teams[0]
     solving_result = evaluate_team(best_network, n_episodes=100)
     mean_reward = solving_result['mean_reward']
+    
     if mean_reward >= config["threshold"]:
         logger.info("Best network solved the task!")
     else:
@@ -409,12 +410,12 @@ def run_qd_with_tweaks(config):
 if __name__ == "__main__":
     # Configuration
     config = {
-        "seed": 7,
+        "seed": 3,
         "nodes": [2, 4, 3],  # Input, hidden, output layers
-        "iterations": 1000,
+        "iterations": 500,
         "threshold": -110,
-        "episodes": 30,
-        "n_teams": 20
+        "episodes": 20,
+        "n_teams": 15
     }
     
     logger.info("Starting QD MountainCar Training")
