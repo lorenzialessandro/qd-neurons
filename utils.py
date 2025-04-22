@@ -1,6 +1,7 @@
 from matplotlib.cm import get_cmap
 import networkx as nx
 import numpy as np
+import torch
 import matplotlib.pyplot as plt
 from ribs.visualize import grid_archive_heatmap
 from ribs.archives import GridArchive
@@ -8,21 +9,52 @@ import yaml
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+from network import NCHL, Neuron
+
 # Load the configuration file
 def load_config(config_path):
     with open(config_path, "r") as file:
         return yaml.safe_load(file)
     
-def save_network_params(network, output_dir):
-    """Save the parameters of a network"""
-    params = []
-    for neuron in network.all_neurons:
-        params.append({
-            'neuron_id': neuron.neuron_id,
-            'params': neuron.params
-        })
+# -----------------------------
+
+# Save network
+def save_network(net, output_dir, filename="best_net.pt"):
+    # Dictionary to store the network data
+    pt_data = {
+        "nodes": net.nodes,             # List of nodes in the network
+        "neurons": [],                  # List to store neuron data
+        "weights": net.get_weights()    # Weights of the network    
+    }
     
-    np.save(f"{output_dir}/best_network_params.npy", params)
+    # Store neuron data
+    for neuron in net.all_neurons:
+        pt_data["neurons"].append({
+            "neuron_id": neuron.neuron_id,
+            "params": neuron.get_rule() # [pre, post, corr, dec, eta]
+        })
+        
+    # Save the data to a .pt file
+    torch.save(pt_data, f"{output_dir}/{filename}")
+    
+# Load network
+def load_network(path, device="cpu"):
+    pt_data = torch.load(path, map_location=device)
+    
+    # Create the population of neurons
+    neurons = []
+    for neuron_data in pt_data["neurons"]:
+        neuron = Neuron(neuron_id=neuron_data["neuron_id"], params=neuron_data["params"], device=device)
+        neurons.append(neuron)
+    
+    # Create the network
+    net = NCHL(nodes=pt_data["nodes"], population=neurons, device=device)
+    
+    # Set the weights
+    weights = [torch.tensor(weight, device=device) for weight in pt_data["weights"]]
+    net.set_weights(weights)
+    
+    return net
 
 # -----------------------------
 

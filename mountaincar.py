@@ -161,7 +161,7 @@ def create_balanced_teams(pop, config, elites=None, n_teams=10):
     # Create remaining networks
     remaining = n_teams - len(nets)
     
-    # New option: create teams with random neurons
+    # # New option: create teams with random neurons
     # for _ in range(remaining):
     #     team_neurons = pop.copy()
     #     random.shuffle(team_neurons)
@@ -255,9 +255,9 @@ def run_qd_with_tweaks(config):
     # Create archives for each neuron
     archives = {
         neuron.neuron_id: NeuronArchive(
-            dims=[10, 10],   # 10x10 grid 
-            ranges = [(0, 0.3), (0, 1)],
-            sigma=0.2,
+            dims=config["dims"],   
+            ranges = config["ranges"],
+            sigma=config["sigma"],
             seed=config["seed"] + neuron.neuron_id 
         ) for neuron in pop
     }
@@ -276,18 +276,23 @@ def run_qd_with_tweaks(config):
     
     # Main loop
     for iteration in tqdm(range(config["iterations"])):
-        exploration_rate = max(0.2, 0.9 - (iteration / config["iterations"]) * 0.7) 
+        # exploration_rate = max(0.2, 0.9 - (iteration / config["iterations"]) * 0.7) 
+        # Set exploration rate high at the beginning and decrease it slowly
         
+        # slow_rate = 0.5 # how fast to decrease exploration rate : if is 0.5, it will be 0.9 at the beginning and 0.4 at the end
+        # exploration_rate = max(0.2, 0.9 - (iteration / config["iterations"]) * slow_rate)
+        
+        # exploration_rate = 0.2 + 0.7 * np.exp(-iteration / (config["iterations"] * 0.3))
+        
+        exploration_rate = config["exploration_rate"] 
+                
         # 1. Update neuron parameters
         for neuron in pop:
             archive = archives[neuron.neuron_id]
-
+            
             if random.random() < exploration_rate or archive.empty:
-                if random.random() < 0.2:  # 20% chance for completely new rules
-                    solution = archive.get_random_rule()
-                else:
-                    # Exploration: use emitter and take random solution
-                    solution = archive.ask()
+                # Exploration: use emitter and take random solution
+                solution = archive.ask()
             else:
                 # Exploitation: select good solution from archive
                 # Uses fitness-proportional selection to choose the best neurons with increasing selection pressure
@@ -332,7 +337,8 @@ def run_qd_with_tweaks(config):
             for neuron in net.all_neurons:
                 behavior, complexity = neuron.compute_new_descriptor()
                 # behavior, complexity = neuron.compute_descriptors()
-                # print(f"Neuron {neuron.neuron_id}: {behavior}, {complexity}")
+                # behavior, complexity = neuron.compute_new_descriptor_2()
+                #print(f"Neuron {neuron.neuron_id}: {behavior}, {complexity}")
                 
                 descriptors[neuron.neuron_id].append([behavior, complexity])
                 objectives[neuron.neuron_id].append(fitness)
@@ -371,11 +377,13 @@ def run_qd_with_tweaks(config):
         
         # Log progress
         if iteration % 10 == 0:
-            logger.info(f"Iteration {iteration}: Best={iteration_best:.1f}, Avg={iteration_avg:.1f}")
+            logger.info(f"Iteration {iteration}: Best={iteration_best:.1f}, Avg={iteration_avg:.1f}, Exploration Rate={exploration_rate:.2f}")
         
         # Check for convergence
         if iteration_best >= config["threshold"]:
             logger.info(f"Task solved at iteration {iteration}!")
+
+            
     
     # Clean up
     pool.close()
@@ -394,6 +402,10 @@ def run_qd_with_tweaks(config):
         
     # Test the best network
     best_network = elite_teams[0]
+    # Save the best network
+    save_network(best_network, output_dir)
+    # exit()
+    
     solving_result = evaluate_team(best_network, n_episodes=100)
     mean_reward = solving_result['mean_reward']
     
@@ -410,12 +422,16 @@ def run_qd_with_tweaks(config):
 if __name__ == "__main__":
     # Configuration
     config = {
-        "seed": 3,
-        "nodes": [2, 4, 3],  # Input, hidden, output layers
-        "iterations": 500,
+        "exploration_rate": 0, #TESTING
+        "seed": 123,
+        "nodes": [2, 8, 3],  # Input, hidden, output layers
+        "iterations": 200,
         "threshold": -110,
-        "episodes": 20,
-        "n_teams": 15
+        "episodes": 10,
+        "n_teams": 15,
+        "dims": [15, 15],   
+        "ranges": [(0, 1), (0, 1)],
+        "sigma": 1
     }
     
     logger.info("Starting QD MountainCar Training")

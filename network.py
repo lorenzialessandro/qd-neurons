@@ -92,7 +92,7 @@ class Neuron:
         # Option 1: Compute standard deviation of activations
         activations_tensor = torch.tensor(self.activations, device=self.device)
         std = torch.std(activations_tensor).item()
-        # return std
+        return std
 
         # Option 2: 
         n_chunks = min(10, len(self.activations) // 10) 
@@ -204,8 +204,24 @@ class Neuron:
         # Compute complexity
         complexity = self.compute_params_complexity()
         
+        if self.weight_changes:
+            weight_changes_tensor = torch.tensor(self.weight_changes, device=self.device)
+            avg_weight_change = torch.mean(torch.abs(weight_changes_tensor)).item()
+            # print(f"Neuron {self.neuron_id}: Avg weight change: {avg_weight_change}")
+        # return avg_weight_change, self.eta
         # return behavioral_variability, complexity
         return behavioral_variability, self.eta
+    
+    def compute_new_descriptor_2(self):
+        if not self.activations:
+            return 0.0, 0.0
+        
+        # Use a different pair of descriptors that better differentiate solutions
+        # For example: frequency of activation and correlation with reward
+        activation_frequency = sum(abs(a) > 0.2 for a in self.activations) / max(1, len(self.activations))
+        weight_change_magnitude = np.mean([abs(wc) for wc in self.weight_changes]) if self.weight_changes else 0.0
+        
+        return activation_frequency, weight_change_magnitude
         
 
     def compute_descriptors(self):
@@ -228,6 +244,7 @@ class Neuron:
         else:
             avg_weight_change = 0.0
         
+        return self.eta, avg_weight_change
         return avg_entropy, avg_weight_change
 
 class NCHL(nn.Module):
@@ -290,7 +307,7 @@ class NCHL(nn.Module):
             layer.double()
             
             if init is None:
-                nn.init.xavier_uniform_(layer.weight.data)
+                nn.init.xavier_uniform_(layer.weight.data, 0.5)
             else:
                 self._initialize_weights(layer, init)
                 
