@@ -152,7 +152,7 @@ def initialize_archives_safer(archives, pop, output_dir, config, logger, n_sampl
     logger.info("Initializing archives with random rules...")
     
     # Process in smaller batches to avoid memory issues
-    batch_size = 2
+    batch_size = 1
     for batch in range(0, n_samples, batch_size):
         end_batch = min(batch + batch_size, n_samples)
         logger.info(f"Processing initialization batch {batch+1}-{end_batch} of {n_samples}")
@@ -509,7 +509,7 @@ if __name__ == "__main__":
     mp.set_start_method('spawn', force=True)
     
     config = {
-        "seed": 8,
+        "seed": 9,
         "nodes": [4, 4, 2],
         "iterations": 100,
         "threshold": 500,

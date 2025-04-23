@@ -1,0 +1,214 @@
+2025-04-09 10:54:39,306 - __main__ - INFO - Starting QD Acrobot Training
+2025-04-09 10:54:39,306 - __main__ - INFO - Configuration: {'seed': 25, 'nodes': [6, 8, 3], 'iterations': 100, 'threshold': -100, 'episodes': 20, 'n_teams': 15}
+2025-04-09 10:55:13,601 - __main__ - INFO - Iteration 0: Best=-174.4, Avg=-452.8
+2025-04-09 10:55:46,542 - __main__ - INFO - Iteration 1: Best=-164.3, Avg=-433.8
+2025-04-09 10:56:19,812 - __main__ - INFO - Iteration 2: Best=-164.6, Avg=-418.6
+2025-04-09 10:56:54,376 - __main__ - INFO - Iteration 3: Best=-160.1, Avg=-433.5
+2025-04-09 10:57:28,976 - __main__ - INFO - Iteration 4: Best=-115.2, Avg=-400.4
+2025-04-09 10:58:01,697 - __main__ - INFO - Iteration 5: Best=-98.2, Avg=-408.3
+2025-04-09 10:58:01,697 - __main__ - INFO - Task solved at iteration 5!
+2025-04-09 10:58:29,347 - __main__ - INFO - Iteration 6: Best=-109.5, Avg=-402.2
+2025-04-09 10:58:51,774 - __main__ - INFO - Iteration 7: Best=-98.0, Avg=-426.5
+2025-04-09 10:58:51,774 - __main__ - INFO - Task solved at iteration 7!
+2025-04-09 10:59:14,749 - __main__ - INFO - Iteration 8: Best=-107.5, Avg=-433.1
+2025-04-09 10:59:37,027 - __main__ - INFO - Iteration 9: Best=-83.0, Avg=-425.5
+2025-04-09 10:59:37,027 - __main__ - INFO - Task solved at iteration 9!
+2025-04-09 10:59:59,811 - __main__ - INFO - Iteration 10: Best=-92.8, Avg=-380.6
+2025-04-09 10:59:59,811 - __main__ - INFO - Task solved at iteration 10!
+2025-04-09 11:00:22,291 - __main__ - INFO - Iteration 11: Best=-95.5, Avg=-362.8
+2025-04-09 11:00:22,291 - __main__ - INFO - Task solved at iteration 11!
+2025-04-09 11:00:45,444 - __main__ - INFO - Iteration 12: Best=-98.8, Avg=-449.8
+2025-04-09 11:00:45,444 - __main__ - INFO - Task solved at iteration 12!
+2025-04-09 11:01:08,291 - __main__ - INFO - Iteration 13: Best=-95.8, Avg=-392.2
+2025-04-09 11:01:08,291 - __main__ - INFO - Task solved at iteration 13!
+2025-04-09 11:01:30,909 - __main__ - INFO - Iteration 14: Best=-103.5, Avg=-446.0
+2025-04-09 11:01:53,054 - __main__ - INFO - Iteration 15: Best=-87.8, Avg=-388.0
+2025-04-09 11:01:53,054 - __main__ - INFO - Task solved at iteration 15!
+2025-04-09 11:02:15,641 - __main__ - INFO - Iteration 16: Best=-79.8, Avg=-439.0
+2025-04-09 11:02:15,641 - __main__ - INFO - Task solved at iteration 16!
+2025-04-09 11:02:38,520 - __main__ - INFO - Iteration 17: Best=-78.5, Avg=-444.4
+2025-04-09 11:02:38,520 - __main__ - INFO - Task solved at iteration 17!
+2025-04-09 11:03:00,107 - __main__ - INFO - Iteration 18: Best=-81.7, Avg=-363.1
+2025-04-09 11:03:00,107 - __main__ - INFO - Task solved at iteration 18!
+2025-04-09 11:03:22,484 - __main__ - INFO - Iteration 19: Best=-80.6, Avg=-405.1
+2025-04-09 11:03:22,484 - __main__ - INFO - Task solved at iteration 19!
+2025-04-09 11:03:44,259 - __main__ - INFO - Iteration 20: Best=-78.8, Avg=-388.3
+2025-04-09 11:03:44,259 - __main__ - INFO - Task solved at iteration 20!
+2025-04-09 11:04:06,198 - __main__ - INFO - Iteration 21: Best=-87.8, Avg=-372.7
+2025-04-09 11:04:06,198 - __main__ - INFO - Task solved at iteration 21!
+2025-04-09 11:04:28,467 - __main__ - INFO - Iteration 22: Best=-89.3, Avg=-417.3
+2025-04-09 11:04:28,467 - __main__ - INFO - Task solved at iteration 22!
+2025-04-09 11:04:51,466 - __main__ - INFO - Iteration 23: Best=-93.3, Avg=-425.3
+2025-04-09 11:04:51,466 - __main__ - INFO - Task solved at iteration 23!
+2025-04-09 11:05:14,121 - __main__ - INFO - Iteration 24: Best=-81.6, Avg=-412.4
+2025-04-09 11:05:14,121 - __main__ - INFO - Task solved at iteration 24!
+2025-04-09 11:05:37,012 - __main__ - INFO - Iteration 25: Best=-77.8, Avg=-438.1
+2025-04-09 11:05:37,012 - __main__ - INFO - Task solved at iteration 25!
+2025-04-09 11:05:59,606 - __main__ - INFO - Iteration 26: Best=-80.0, Avg=-430.3
+2025-04-09 11:05:59,607 - __main__ - INFO - Task solved at iteration 26!
+2025-04-09 11:06:22,316 - __main__ - INFO - Iteration 27: Best=-85.0, Avg=-423.6
+2025-04-09 11:06:22,316 - __main__ - INFO - Task solved at iteration 27!
+2025-04-09 11:06:45,408 - __main__ - INFO - Iteration 28: Best=-89.8, Avg=-357.6
+2025-04-09 11:06:45,408 - __main__ - INFO - Task solved at iteration 28!
+2025-04-09 11:07:08,438 - __main__ - INFO - Iteration 29: Best=-90.3, Avg=-445.7
+2025-04-09 11:07:08,438 - __main__ - INFO - Task solved at iteration 29!
+2025-04-09 11:07:31,819 - __main__ - INFO - Iteration 30: Best=-75.2, Avg=-441.8
+2025-04-09 11:07:31,819 - __main__ - INFO - Task solved at iteration 30!
+2025-04-09 11:07:54,296 - __main__ - INFO - Iteration 31: Best=-81.0, Avg=-413.4
+2025-04-09 11:07:54,296 - __main__ - INFO - Task solved at iteration 31!
+2025-04-09 11:08:16,843 - __main__ - INFO - Iteration 32: Best=-79.0, Avg=-404.6
+2025-04-09 11:08:16,843 - __main__ - INFO - Task solved at iteration 32!
+2025-04-09 11:08:39,437 - __main__ - INFO - Iteration 33: Best=-85.5, Avg=-400.1
+2025-04-09 11:08:39,437 - __main__ - INFO - Task solved at iteration 33!
+2025-04-09 11:09:01,711 - __main__ - INFO - Iteration 34: Best=-76.6, Avg=-433.7
+2025-04-09 11:09:01,712 - __main__ - INFO - Task solved at iteration 34!
+2025-04-09 11:09:24,149 - __main__ - INFO - Iteration 35: Best=-82.8, Avg=-442.1
+2025-04-09 11:09:24,149 - __main__ - INFO - Task solved at iteration 35!
+2025-04-09 11:09:46,636 - __main__ - INFO - Iteration 36: Best=-81.2, Avg=-420.3
+2025-04-09 11:09:46,636 - __main__ - INFO - Task solved at iteration 36!
+2025-04-09 11:10:08,912 - __main__ - INFO - Iteration 37: Best=-82.2, Avg=-404.8
+2025-04-09 11:10:08,912 - __main__ - INFO - Task solved at iteration 37!
+2025-04-09 11:10:31,236 - __main__ - INFO - Iteration 38: Best=-79.7, Avg=-420.7
+2025-04-09 11:10:31,236 - __main__ - INFO - Task solved at iteration 38!
+2025-04-09 11:10:54,403 - __main__ - INFO - Iteration 39: Best=-80.0, Avg=-443.9
+2025-04-09 11:10:54,403 - __main__ - INFO - Task solved at iteration 39!
+2025-04-09 11:11:16,913 - __main__ - INFO - Iteration 40: Best=-80.3, Avg=-415.6
+2025-04-09 11:11:16,913 - __main__ - INFO - Task solved at iteration 40!
+2025-04-09 11:11:39,493 - __main__ - INFO - Iteration 41: Best=-88.5, Avg=-367.8
+2025-04-09 11:11:39,493 - __main__ - INFO - Task solved at iteration 41!
+2025-04-09 11:12:02,232 - __main__ - INFO - Iteration 42: Best=-85.7, Avg=-444.4
+2025-04-09 11:12:02,232 - __main__ - INFO - Task solved at iteration 42!
+2025-04-09 11:12:24,764 - __main__ - INFO - Iteration 43: Best=-89.5, Avg=-406.0
+2025-04-09 11:12:24,765 - __main__ - INFO - Task solved at iteration 43!
+2025-04-09 11:12:47,561 - __main__ - INFO - Iteration 44: Best=-82.8, Avg=-415.8
+2025-04-09 11:12:47,561 - __main__ - INFO - Task solved at iteration 44!
+2025-04-09 11:13:10,154 - __main__ - INFO - Iteration 45: Best=-82.3, Avg=-380.1
+2025-04-09 11:13:10,154 - __main__ - INFO - Task solved at iteration 45!
+2025-04-09 11:13:32,738 - __main__ - INFO - Iteration 46: Best=-83.2, Avg=-390.9
+2025-04-09 11:13:32,739 - __main__ - INFO - Task solved at iteration 46!
+2025-04-09 11:13:55,229 - __main__ - INFO - Iteration 47: Best=-80.3, Avg=-411.0
+2025-04-09 11:13:55,229 - __main__ - INFO - Task solved at iteration 47!
+2025-04-09 11:14:18,236 - __main__ - INFO - Iteration 48: Best=-85.8, Avg=-409.3
+2025-04-09 11:14:18,236 - __main__ - INFO - Task solved at iteration 48!
+2025-04-09 11:14:41,703 - __main__ - INFO - Iteration 49: Best=-81.7, Avg=-410.3
+2025-04-09 11:14:41,703 - __main__ - INFO - Task solved at iteration 49!
+2025-04-09 11:15:05,135 - __main__ - INFO - Iteration 50: Best=-80.5, Avg=-424.2
+2025-04-09 11:15:05,135 - __main__ - INFO - Task solved at iteration 50!
+2025-04-09 11:15:28,669 - __main__ - INFO - Iteration 51: Best=-82.5, Avg=-413.9
+2025-04-09 11:15:28,669 - __main__ - INFO - Task solved at iteration 51!
+2025-04-09 11:15:52,613 - __main__ - INFO - Iteration 52: Best=-88.6, Avg=-408.7
+2025-04-09 11:15:52,613 - __main__ - INFO - Task solved at iteration 52!
+2025-04-09 11:16:15,522 - __main__ - INFO - Iteration 53: Best=-79.9, Avg=-395.2
+2025-04-09 11:16:15,522 - __main__ - INFO - Task solved at iteration 53!
+2025-04-09 11:16:38,104 - __main__ - INFO - Iteration 54: Best=-84.2, Avg=-397.2
+2025-04-09 11:16:38,104 - __main__ - INFO - Task solved at iteration 54!
+2025-04-09 11:17:01,132 - __main__ - INFO - Iteration 55: Best=-81.0, Avg=-432.8
+2025-04-09 11:17:01,132 - __main__ - INFO - Task solved at iteration 55!
+2025-04-09 11:17:24,313 - __main__ - INFO - Iteration 56: Best=-83.8, Avg=-415.1
+2025-04-09 11:17:24,313 - __main__ - INFO - Task solved at iteration 56!
+2025-04-09 11:17:47,234 - __main__ - INFO - Iteration 57: Best=-78.0, Avg=-376.5
+2025-04-09 11:17:47,234 - __main__ - INFO - Task solved at iteration 57!
+2025-04-09 11:18:10,189 - __main__ - INFO - Iteration 58: Best=-79.0, Avg=-331.2
+2025-04-09 11:18:10,189 - __main__ - INFO - Task solved at iteration 58!
+2025-04-09 11:18:33,746 - __main__ - INFO - Iteration 59: Best=-80.5, Avg=-366.6
+2025-04-09 11:18:33,746 - __main__ - INFO - Task solved at iteration 59!
+2025-04-09 11:18:57,293 - __main__ - INFO - Iteration 60: Best=-81.2, Avg=-409.6
+2025-04-09 11:18:57,293 - __main__ - INFO - Task solved at iteration 60!
+2025-04-09 11:19:20,976 - __main__ - INFO - Iteration 61: Best=-84.1, Avg=-401.8
+2025-04-09 11:19:20,976 - __main__ - INFO - Task solved at iteration 61!
+2025-04-09 11:19:44,293 - __main__ - INFO - Iteration 62: Best=-87.8, Avg=-393.4
+2025-04-09 11:19:44,293 - __main__ - INFO - Task solved at iteration 62!
+2025-04-09 11:20:07,726 - __main__ - INFO - Iteration 63: Best=-82.3, Avg=-399.9
+2025-04-09 11:20:07,726 - __main__ - INFO - Task solved at iteration 63!
+2025-04-09 11:20:32,188 - __main__ - INFO - Iteration 64: Best=-85.1, Avg=-440.0
+2025-04-09 11:20:32,188 - __main__ - INFO - Task solved at iteration 64!
+2025-04-09 11:20:56,093 - __main__ - INFO - Iteration 65: Best=-86.0, Avg=-444.1
+2025-04-09 11:20:56,093 - __main__ - INFO - Task solved at iteration 65!
+2025-04-09 11:21:19,490 - __main__ - INFO - Iteration 66: Best=-80.0, Avg=-400.8
+2025-04-09 11:21:19,490 - __main__ - INFO - Task solved at iteration 66!
+2025-04-09 11:21:55,555 - __main__ - INFO - Iteration 67: Best=-83.7, Avg=-430.1
+2025-04-09 11:21:55,555 - __main__ - INFO - Task solved at iteration 67!
+2025-04-09 11:22:34,154 - __main__ - INFO - Iteration 68: Best=-80.8, Avg=-441.4
+2025-04-09 11:22:34,154 - __main__ - INFO - Task solved at iteration 68!
+2025-04-09 11:23:12,354 - __main__ - INFO - Iteration 69: Best=-83.5, Avg=-434.6
+2025-04-09 11:23:12,354 - __main__ - INFO - Task solved at iteration 69!
+2025-04-09 11:23:48,705 - __main__ - INFO - Iteration 70: Best=-79.9, Avg=-422.4
+2025-04-09 11:23:48,705 - __main__ - INFO - Task solved at iteration 70!
+2025-04-09 11:24:24,184 - __main__ - INFO - Iteration 71: Best=-81.6, Avg=-393.3
+2025-04-09 11:24:24,184 - __main__ - INFO - Task solved at iteration 71!
+2025-04-09 11:25:01,779 - __main__ - INFO - Iteration 72: Best=-79.3, Avg=-437.5
+2025-04-09 11:25:01,780 - __main__ - INFO - Task solved at iteration 72!
+2025-04-09 11:25:35,436 - __main__ - INFO - Iteration 73: Best=-76.3, Avg=-358.6
+2025-04-09 11:25:35,437 - __main__ - INFO - Task solved at iteration 73!
+2025-04-09 11:26:11,686 - __main__ - INFO - Iteration 74: Best=-75.5, Avg=-425.5
+2025-04-09 11:26:11,686 - __main__ - INFO - Task solved at iteration 74!
+2025-04-09 11:26:48,722 - __main__ - INFO - Iteration 75: Best=-77.6, Avg=-403.2
+2025-04-09 11:26:48,723 - __main__ - INFO - Task solved at iteration 75!
+2025-04-09 11:27:25,303 - __main__ - INFO - Iteration 76: Best=-82.6, Avg=-424.9
+2025-04-09 11:27:25,304 - __main__ - INFO - Task solved at iteration 76!
+2025-04-09 11:28:01,057 - __main__ - INFO - Iteration 77: Best=-86.2, Avg=-401.2
+2025-04-09 11:28:01,057 - __main__ - INFO - Task solved at iteration 77!
+2025-04-09 11:28:36,470 - __main__ - INFO - Iteration 78: Best=-81.7, Avg=-395.0
+2025-04-09 11:28:36,470 - __main__ - INFO - Task solved at iteration 78!
+2025-04-09 11:29:12,294 - __main__ - INFO - Iteration 79: Best=-83.5, Avg=-386.4
+2025-04-09 11:29:12,294 - __main__ - INFO - Task solved at iteration 79!
+2025-04-09 11:29:46,851 - __main__ - INFO - Iteration 80: Best=-86.2, Avg=-354.3
+2025-04-09 11:29:46,851 - __main__ - INFO - Task solved at iteration 80!
+2025-04-09 11:30:20,930 - __main__ - INFO - Iteration 81: Best=-82.8, Avg=-368.9
+2025-04-09 11:30:20,931 - __main__ - INFO - Task solved at iteration 81!
+2025-04-09 11:30:58,508 - __main__ - INFO - Iteration 82: Best=-84.2, Avg=-445.0
+2025-04-09 11:30:58,508 - __main__ - INFO - Task solved at iteration 82!
+2025-04-09 11:31:33,885 - __main__ - INFO - Iteration 83: Best=-82.7, Avg=-397.4
+2025-04-09 11:31:33,885 - __main__ - INFO - Task solved at iteration 83!
+2025-04-09 11:32:08,978 - __main__ - INFO - Iteration 84: Best=-77.1, Avg=-374.2
+2025-04-09 11:32:08,978 - __main__ - INFO - Task solved at iteration 84!
+2025-04-09 11:32:44,101 - __main__ - INFO - Iteration 85: Best=-81.5, Avg=-361.2
+2025-04-09 11:32:44,101 - __main__ - INFO - Task solved at iteration 85!
+2025-04-09 11:33:18,451 - __main__ - INFO - Iteration 86: Best=-80.7, Avg=-368.8
+2025-04-09 11:33:18,451 - __main__ - INFO - Task solved at iteration 86!
+2025-04-09 11:33:54,308 - __main__ - INFO - Iteration 87: Best=-80.4, Avg=-409.7
+2025-04-09 11:33:54,308 - __main__ - INFO - Task solved at iteration 87!
+2025-04-09 11:34:30,453 - __main__ - INFO - Iteration 88: Best=-85.8, Avg=-395.1
+2025-04-09 11:34:30,453 - __main__ - INFO - Task solved at iteration 88!
+2025-04-09 11:35:04,989 - __main__ - INFO - Iteration 89: Best=-90.6, Avg=-382.1
+2025-04-09 11:35:04,989 - __main__ - INFO - Task solved at iteration 89!
+2025-04-09 11:35:42,780 - __main__ - INFO - Iteration 90: Best=-78.3, Avg=-440.6
+2025-04-09 11:35:42,780 - __main__ - INFO - Task solved at iteration 90!
+2025-04-09 11:36:16,675 - __main__ - INFO - Iteration 91: Best=-79.3, Avg=-377.8
+2025-04-09 11:36:16,675 - __main__ - INFO - Task solved at iteration 91!
+2025-04-09 11:36:51,976 - __main__ - INFO - Iteration 92: Best=-81.5, Avg=-380.4
+2025-04-09 11:36:51,977 - __main__ - INFO - Task solved at iteration 92!
+2025-04-09 11:37:28,572 - __main__ - INFO - Iteration 93: Best=-83.5, Avg=-440.2
+2025-04-09 11:37:28,572 - __main__ - INFO - Task solved at iteration 93!
+2025-04-09 11:38:04,519 - __main__ - INFO - Iteration 94: Best=-82.7, Avg=-388.3
+2025-04-09 11:38:04,519 - __main__ - INFO - Task solved at iteration 94!
+2025-04-09 11:38:38,201 - __main__ - INFO - Iteration 95: Best=-88.2, Avg=-371.7
+2025-04-09 11:38:38,202 - __main__ - INFO - Task solved at iteration 95!
+2025-04-09 11:39:12,330 - __main__ - INFO - Iteration 96: Best=-82.9, Avg=-409.0
+2025-04-09 11:39:12,330 - __main__ - INFO - Task solved at iteration 96!
+2025-04-09 11:39:47,240 - __main__ - INFO - Iteration 97: Best=-81.5, Avg=-431.4
+2025-04-09 11:39:47,240 - __main__ - INFO - Task solved at iteration 97!
+2025-04-09 11:40:21,849 - __main__ - INFO - Iteration 98: Best=-77.5, Avg=-417.6
+2025-04-09 11:40:21,850 - __main__ - INFO - Task solved at iteration 98!
+2025-04-09 11:40:55,477 - __main__ - INFO - Iteration 99: Best=-81.2, Avg=-416.1
+2025-04-09 11:40:55,477 - __main__ - INFO - Task solved at iteration 99!
+2025-04-09 11:40:55,592 - __main__ - INFO - QD training completed.
+2025-04-09 11:40:59,424 - __main__ - INFO - Final archive stats:
+2025-04-09 11:40:59,424 - __main__ - INFO - Neuron 0: 0.1
+2025-04-09 11:40:59,424 - __main__ - INFO - Neuron 1: 0.11
+2025-04-09 11:40:59,424 - __main__ - INFO - Neuron 2: 0.08
+2025-04-09 11:40:59,424 - __main__ - INFO - Neuron 3: 0.09
+2025-04-09 11:40:59,424 - __main__ - INFO - Neuron 4: 0.13
+2025-04-09 11:40:59,424 - __main__ - INFO - Neuron 5: 0.09
+2025-04-09 11:40:59,424 - __main__ - INFO - Neuron 6: 0.12
+2025-04-09 11:40:59,424 - __main__ - INFO - Neuron 7: 0.12
+2025-04-09 11:40:59,424 - __main__ - INFO - Neuron 8: 0.1
+2025-04-09 11:40:59,425 - __main__ - INFO - Neuron 9: 0.11
+2025-04-09 11:40:59,425 - __main__ - INFO - Neuron 10: 0.06
+2025-04-09 11:40:59,425 - __main__ - INFO - Neuron 11: 0.11
+2025-04-09 11:40:59,425 - __main__ - INFO - Neuron 12: 0.09
+2025-04-09 11:40:59,425 - __main__ - INFO - Neuron 13: 0.11
+2025-04-09 11:40:59,425 - __main__ - INFO - Neuron 14: 0.1
+2025-04-09 11:40:59,425 - __main__ - INFO - Neuron 15: 0.11
+2025-04-09 11:40:59,425 - __main__ - INFO - Neuron 16: 0.09
+2025-04-09 11:41:16,959 - __main__ - INFO - Best network solved the task!

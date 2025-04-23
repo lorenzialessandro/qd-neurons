@@ -1,0 +1,65 @@
+2025-04-22 13:05:37,446 - __main__ - INFO - Starting QD mountaincar Training
+2025-04-22 13:05:37,446 - __main__ - INFO - Configuration: {'seed': 19, 'nodes': [2, 8, 3], 'iterations': 300, 'threshold': -110, 'episodes': 10, 'n_teams': 15, 'dims': [10, 10], 'ranges': [(0, 1), (0, 1)], 'sigma': 1}
+2025-04-22 13:05:37,561 - __main__ - INFO - Initializing archives with random rules...
+2025-04-22 13:05:54,606 - __main__ - INFO - Archives initialized with random rules.
+2025-04-22 13:06:00,349 - __main__ - INFO - Iteration 0: Best=-155.9, Avg=-197.1
+2025-04-22 13:06:53,862 - __main__ - INFO - Iteration 10: Best=-121.6, Avg=-192.5
+2025-04-22 13:07:35,393 - __main__ - INFO - Task solved at iteration 18!
+2025-04-22 13:07:45,815 - __main__ - INFO - Iteration 20: Best=-117.5, Avg=-188.1
+2025-04-22 13:08:41,366 - __main__ - INFO - Iteration 30: Best=-122.8, Avg=-190.6
+2025-04-22 13:09:19,666 - __main__ - INFO - Task solved at iteration 37!
+2025-04-22 13:09:36,196 - __main__ - INFO - Iteration 40: Best=-121.4, Avg=-190.5
+2025-04-22 13:10:33,316 - __main__ - INFO - Iteration 50: Best=-120.3, Avg=-189.5
+2025-04-22 13:11:34,186 - __main__ - INFO - Iteration 60: Best=-130.5, Avg=-191.1
+2025-04-22 13:12:39,311 - __main__ - INFO - Iteration 70: Best=-119.5, Avg=-187.4
+2025-04-22 13:12:45,680 - __main__ - INFO - Task solved at iteration 71!
+2025-04-22 13:13:47,892 - __main__ - INFO - Iteration 80: Best=-127.8, Avg=-190.5
+2025-04-22 13:14:23,494 - __main__ - INFO - Task solved at iteration 85!
+2025-04-22 13:14:45,354 - __main__ - INFO - Task solved at iteration 88!
+2025-04-22 13:15:00,261 - __main__ - INFO - Iteration 90: Best=-122.9, Avg=-190.1
+2025-04-22 13:15:07,707 - __main__ - INFO - Task solved at iteration 91!
+2025-04-22 13:16:16,680 - __main__ - INFO - Iteration 100: Best=-114.3, Avg=-189.5
+2025-04-22 13:16:48,368 - __main__ - INFO - Task solved at iteration 104!
+2025-04-22 13:16:56,268 - __main__ - INFO - Task solved at iteration 105!
+2025-04-22 13:17:37,734 - __main__ - INFO - Iteration 110: Best=-128.9, Avg=-190.7
+2025-04-22 13:18:19,448 - __main__ - INFO - Task solved at iteration 115!
+2025-04-22 13:19:02,045 - __main__ - INFO - Iteration 120: Best=-121.2, Avg=-183.7
+2025-04-22 13:20:31,870 - __main__ - INFO - Iteration 130: Best=-125.6, Avg=-187.1
+2025-04-22 13:22:06,104 - __main__ - INFO - Iteration 140: Best=-121.6, Avg=-189.7
+2025-04-22 13:22:54,939 - __main__ - INFO - Task solved at iteration 145!
+2025-04-22 13:23:44,800 - __main__ - INFO - Iteration 150: Best=-111.4, Avg=-187.1
+2025-04-22 13:25:28,674 - __main__ - INFO - Iteration 160: Best=-112.5, Avg=-189.3
+2025-04-22 13:27:17,288 - __main__ - INFO - Iteration 170: Best=-117.6, Avg=-186.8
+2025-04-22 13:29:10,803 - __main__ - INFO - Iteration 180: Best=-114.1, Avg=-188.9
+2025-04-22 13:31:09,671 - __main__ - INFO - Iteration 190: Best=-121.6, Avg=-188.7
+2025-04-22 13:33:00,191 - __main__ - INFO - Task solved at iteration 199!
+2025-04-22 13:33:13,055 - __main__ - INFO - Iteration 200: Best=-127.4, Avg=-190.3
+2025-04-22 13:35:21,244 - __main__ - INFO - Iteration 210: Best=-113.7, Avg=-189.5
+2025-04-22 13:37:07,489 - __main__ - INFO - Task solved at iteration 218!
+2025-04-22 13:37:34,273 - __main__ - INFO - Iteration 220: Best=-118.6, Avg=-188.7
+2025-04-22 13:39:52,583 - __main__ - INFO - Iteration 230: Best=-127.4, Avg=-191.1
+2025-04-22 13:42:13,853 - __main__ - INFO - Iteration 240: Best=-120.0, Avg=-190.0
+2025-04-22 13:44:41,067 - __main__ - INFO - Iteration 250: Best=-120.4, Avg=-189.3
+2025-04-22 13:47:11,959 - __main__ - INFO - Iteration 260: Best=-119.8, Avg=-188.1
+2025-04-22 13:49:47,189 - __main__ - INFO - Iteration 270: Best=-120.3, Avg=-190.0
+2025-04-22 13:52:26,395 - __main__ - INFO - Iteration 280: Best=-129.7, Avg=-187.2
+2025-04-22 13:52:42,517 - __main__ - INFO - Task solved at iteration 281!
+2025-04-22 13:55:12,720 - __main__ - INFO - Iteration 290: Best=-116.1, Avg=-189.4
+2025-04-22 13:56:20,092 - __main__ - INFO - Task solved at iteration 294!
+2025-04-22 13:57:10,608 - __main__ - INFO - Task solved at iteration 297!
+2025-04-22 13:57:45,838 - __main__ - INFO - QD training completed.
+2025-04-22 13:57:48,119 - __main__ - INFO - Final archive stats:
+2025-04-22 13:57:48,119 - __main__ - INFO - Neuron 0: 0.21
+2025-04-22 13:57:48,119 - __main__ - INFO - Neuron 1: 0.18
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 2: 0.16
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 3: 0.23
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 4: 0.16
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 5: 0.21
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 6: 0.23
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 7: 0.24
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 8: 0.16
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 9: 0.21
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 10: 0.22
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 11: 0.16
+2025-04-22 13:57:48,120 - __main__ - INFO - Neuron 12: 0.2
+2025-04-22 13:58:07,297 - __main__ - INFO - Best network did not solve the task.

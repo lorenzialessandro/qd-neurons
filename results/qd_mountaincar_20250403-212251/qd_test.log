@@ -1,0 +1,62 @@
+2025-04-03 21:22:51,581 - __main__ - INFO - Starting QD MountainCar Training
+2025-04-03 21:22:51,581 - __main__ - INFO - Configuration: {'seed': 2, 'nodes': [2, 4, 3], 'iterations': 500, 'threshold': -110, 'episodes': 50, 'n_teams': 20}
+2025-04-03 21:23:22,983 - __main__ - INFO - Iteration 0: Best=-199.2, Avg=-200.0
+2025-04-03 21:27:24,719 - __main__ - INFO - Iteration 10: Best=-162.7, Avg=-197.5
+2025-04-03 21:31:33,227 - __main__ - INFO - Iteration 20: Best=-165.5, Avg=-197.0
+2025-04-03 21:35:47,768 - __main__ - INFO - Iteration 30: Best=-133.3, Avg=-192.3
+2025-04-03 21:40:12,659 - __main__ - INFO - Iteration 40: Best=-133.6, Avg=-190.4
+2025-04-03 21:44:36,789 - __main__ - INFO - Iteration 50: Best=-133.6, Avg=-192.9
+2025-04-03 21:49:02,738 - __main__ - INFO - Iteration 60: Best=-122.3, Avg=-192.4
+2025-04-03 21:53:31,612 - __main__ - INFO - Iteration 70: Best=-120.0, Avg=-192.0
+2025-04-03 21:57:55,597 - __main__ - INFO - Iteration 80: Best=-123.4, Avg=-187.4
+2025-04-03 22:02:25,631 - __main__ - INFO - Iteration 90: Best=-122.5, Avg=-192.5
+2025-04-03 22:07:00,057 - __main__ - INFO - Iteration 100: Best=-123.7, Avg=-190.2
+2025-04-03 22:11:40,461 - __main__ - INFO - Iteration 110: Best=-124.0, Avg=-192.7
+2025-04-03 22:16:27,321 - __main__ - INFO - Iteration 120: Best=-123.7, Avg=-192.4
+2025-04-03 22:21:22,782 - __main__ - INFO - Iteration 130: Best=-121.5, Avg=-189.3
+2025-04-03 22:26:14,316 - __main__ - INFO - Iteration 140: Best=-122.8, Avg=-192.2
+2025-04-03 22:30:55,777 - __main__ - INFO - Iteration 150: Best=-128.1, Avg=-193.9
+2025-04-03 22:35:38,656 - __main__ - INFO - Iteration 160: Best=-127.4, Avg=-193.0
+2025-04-03 22:40:48,305 - __main__ - INFO - Iteration 170: Best=-129.3, Avg=-193.7
+2025-04-03 22:46:01,132 - __main__ - INFO - Iteration 180: Best=-122.3, Avg=-195.3
+2025-04-03 22:51:08,306 - __main__ - INFO - Iteration 190: Best=-124.8, Avg=-188.9
+2025-04-03 22:56:20,487 - __main__ - INFO - Iteration 200: Best=-122.0, Avg=-192.0
+2025-04-03 23:01:42,292 - __main__ - INFO - Iteration 210: Best=-123.2, Avg=-192.4
+2025-04-03 23:07:17,021 - __main__ - INFO - Iteration 220: Best=-122.7, Avg=-188.8
+2025-04-03 23:12:57,237 - __main__ - INFO - Iteration 230: Best=-121.5, Avg=-192.4
+2025-04-03 23:18:56,111 - __main__ - INFO - Iteration 240: Best=-122.2, Avg=-192.3
+2025-04-03 23:25:02,778 - __main__ - INFO - Iteration 250: Best=-120.7, Avg=-192.3
+2025-04-03 23:31:31,141 - __main__ - INFO - Iteration 260: Best=-124.4, Avg=-192.4
+2025-04-03 23:37:57,791 - __main__ - INFO - Iteration 270: Best=-122.6, Avg=-190.2
+2025-04-03 23:44:25,813 - __main__ - INFO - Iteration 280: Best=-122.4, Avg=-192.4
+2025-04-03 23:52:01,986 - __main__ - INFO - Iteration 290: Best=-122.4, Avg=-191.5
+2025-04-03 23:59:38,112 - __main__ - INFO - Iteration 300: Best=-121.8, Avg=-192.3
+2025-04-04 00:07:08,031 - __main__ - INFO - Iteration 310: Best=-120.4, Avg=-190.2
+2025-04-04 00:14:58,973 - __main__ - INFO - Iteration 320: Best=-122.3, Avg=-189.3
+2025-04-04 00:20:52,577 - __main__ - INFO - Iteration 330: Best=-123.2, Avg=-192.2
+2025-04-04 00:25:45,121 - __main__ - INFO - Iteration 340: Best=-123.5, Avg=-191.9
+2025-04-04 00:30:47,410 - __main__ - INFO - Iteration 350: Best=-121.4, Avg=-191.8
+2025-04-04 00:35:55,158 - __main__ - INFO - Iteration 360: Best=-122.4, Avg=-191.2
+2025-04-04 00:41:08,304 - __main__ - INFO - Iteration 370: Best=-120.8, Avg=-189.5
+2025-04-04 00:46:32,136 - __main__ - INFO - Iteration 380: Best=-122.2, Avg=-192.3
+2025-04-04 00:52:10,304 - __main__ - INFO - Iteration 390: Best=-121.1, Avg=-191.4
+2025-04-04 00:57:45,392 - __main__ - INFO - Iteration 400: Best=-122.9, Avg=-192.6
+2025-04-04 01:03:24,489 - __main__ - INFO - Iteration 410: Best=-123.3, Avg=-192.6
+2025-04-04 01:09:25,246 - __main__ - INFO - Iteration 420: Best=-122.2, Avg=-191.6
+2025-04-04 01:15:00,991 - __main__ - INFO - Iteration 430: Best=-120.5, Avg=-186.7
+2025-04-04 01:20:11,324 - __main__ - INFO - Iteration 440: Best=-123.7, Avg=-192.4
+2025-04-04 01:25:30,341 - __main__ - INFO - Iteration 450: Best=-121.0, Avg=-191.9
+2025-04-04 01:30:48,809 - __main__ - INFO - Iteration 460: Best=-123.8, Avg=-184.6
+2025-04-04 01:36:12,411 - __main__ - INFO - Iteration 470: Best=-116.3, Avg=-190.2
+2025-04-04 01:41:47,842 - __main__ - INFO - Iteration 480: Best=-120.9, Avg=-192.1
+2025-04-04 01:47:27,741 - __main__ - INFO - Iteration 490: Best=-120.3, Avg=-186.3
+2025-04-04 01:53:03,455 - __main__ - INFO - Final performance: {'mean_reward': -200.0, 'max_reward': -200.0, 'std_reward': 0.0}
+2025-04-04 01:53:17,762 - __main__ - INFO - Neuron 0: ArchiveStats(num_elites=44, coverage=0.44, qd_score=-8744.868000000002, norm_qd_score=-87.44868000000002, obj_max=-191.06, obj_mean=-198.74700000000004)
+2025-04-04 01:53:17,763 - __main__ - INFO - Neuron 1: ArchiveStats(num_elites=44, coverage=0.44, qd_score=-8757.296000000002, norm_qd_score=-87.57296000000002, obj_max=-191.06, obj_mean=-199.0294545454546)
+2025-04-04 01:53:17,763 - __main__ - INFO - Neuron 2: ArchiveStats(num_elites=40, coverage=0.4, qd_score=-7956.276000000002, norm_qd_score=-79.56276000000001, obj_max=-191.06, obj_mean=-198.90690000000004)
+2025-04-04 01:53:17,763 - __main__ - INFO - Neuron 3: ArchiveStats(num_elites=48, coverage=0.48, qd_score=-9551.654, norm_qd_score=-95.51654, obj_max=-191.06, obj_mean=-198.99279166666668)
+2025-04-04 01:53:17,763 - __main__ - INFO - Neuron 4: ArchiveStats(num_elites=47, coverage=0.47, qd_score=-9351.220000000003, norm_qd_score=-93.51220000000004, obj_max=-191.06, obj_mean=-198.96212765957452)
+2025-04-04 01:53:17,763 - __main__ - INFO - Neuron 5: ArchiveStats(num_elites=39, coverage=0.39, qd_score=-7752.737999999999, norm_qd_score=-77.52738, obj_max=-191.06, obj_mean=-198.78815384615382)
+2025-04-04 01:53:17,763 - __main__ - INFO - Neuron 6: ArchiveStats(num_elites=40, coverage=0.4, qd_score=-7954.820000000002, norm_qd_score=-79.54820000000002, obj_max=-191.06, obj_mean=-198.87050000000005)
+2025-04-04 01:53:17,763 - __main__ - INFO - Neuron 7: ArchiveStats(num_elites=45, coverage=0.45, qd_score=-8956.882, norm_qd_score=-89.56882, obj_max=-191.06, obj_mean=-199.0418222222222)
+2025-04-04 01:53:17,763 - __main__ - INFO - Neuron 8: ArchiveStats(num_elites=42, coverage=0.42, qd_score=-8352.148000000001, norm_qd_score=-83.52148000000001, obj_max=-191.06, obj_mean=-198.8606666666667)

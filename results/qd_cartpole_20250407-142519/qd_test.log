@@ -1,0 +1,105 @@
+2025-04-07 14:25:19,380 - __main__ - INFO - Starting QD CartPole Training
+2025-04-07 14:25:19,380 - __main__ - INFO - Configuration: {'seed': 3, 'nodes': [4, 4, 2], 'iterations': 100, 'threshold': 475, 'episodes': 20, 'n_teams': 10}
+2025-04-07 14:25:19,570 - __main__ - INFO - Initializing archives with random rules...
+2025-04-07 14:26:48,909 - __main__ - INFO - Archives initialized with random rules.
+2025-04-07 14:26:54,118 - __main__ - INFO - Iteration 0: Best=123.6, Avg=29.8
+2025-04-07 14:28:30,785 - __main__ - INFO - Iteration 10: Best=343.9, Avg=101.3
+2025-04-07 14:30:32,093 - __main__ - INFO - Iteration 20: Best=365.8, Avg=87.5
+2025-04-07 14:30:51,685 - __main__ - INFO - Task solved at iteration 21!
+2025-04-07 14:31:11,834 - __main__ - INFO - Task solved at iteration 22!
+2025-04-07 14:31:33,627 - __main__ - INFO - Task solved at iteration 23!
+2025-04-07 14:31:54,348 - __main__ - INFO - Task solved at iteration 24!
+2025-04-07 14:32:15,467 - __main__ - INFO - Task solved at iteration 25!
+2025-04-07 14:32:37,452 - __main__ - INFO - Task solved at iteration 26!
+2025-04-07 14:32:58,451 - __main__ - INFO - Task solved at iteration 27!
+2025-04-07 14:33:21,971 - __main__ - INFO - Task solved at iteration 28!
+2025-04-07 14:33:44,650 - __main__ - INFO - Task solved at iteration 29!
+2025-04-07 14:34:07,322 - __main__ - INFO - Iteration 30: Best=500.0, Avg=119.4
+2025-04-07 14:34:07,322 - __main__ - INFO - Task solved at iteration 30!
+2025-04-07 14:34:30,368 - __main__ - INFO - Task solved at iteration 31!
+2025-04-07 14:34:52,741 - __main__ - INFO - Task solved at iteration 32!
+2025-04-07 14:35:13,417 - __main__ - INFO - Task solved at iteration 33!
+2025-04-07 14:35:38,234 - __main__ - INFO - Task solved at iteration 34!
+2025-04-07 14:35:59,492 - __main__ - INFO - Task solved at iteration 35!
+2025-04-07 14:36:23,702 - __main__ - INFO - Task solved at iteration 36!
+2025-04-07 14:36:44,215 - __main__ - INFO - Task solved at iteration 37!
+2025-04-07 14:37:08,610 - __main__ - INFO - Task solved at iteration 38!
+2025-04-07 14:37:31,236 - __main__ - INFO - Task solved at iteration 39!
+2025-04-07 14:37:55,014 - __main__ - INFO - Iteration 40: Best=500.0, Avg=110.1
+2025-04-07 14:37:55,014 - __main__ - INFO - Task solved at iteration 40!
+2025-04-07 14:38:17,683 - __main__ - INFO - Task solved at iteration 41!
+2025-04-07 14:38:41,431 - __main__ - INFO - Task solved at iteration 42!
+2025-04-07 14:39:05,100 - __main__ - INFO - Task solved at iteration 43!
+2025-04-07 14:39:28,911 - __main__ - INFO - Task solved at iteration 44!
+2025-04-07 14:39:53,528 - __main__ - INFO - Task solved at iteration 45!
+2025-04-07 14:40:18,987 - __main__ - INFO - Task solved at iteration 46!
+2025-04-07 14:40:45,368 - __main__ - INFO - Task solved at iteration 47!
+2025-04-07 14:41:10,495 - __main__ - INFO - Task solved at iteration 48!
+2025-04-07 14:41:36,017 - __main__ - INFO - Task solved at iteration 49!
+2025-04-07 14:42:00,717 - __main__ - INFO - Iteration 50: Best=500.0, Avg=124.4
+2025-04-07 14:42:00,717 - __main__ - INFO - Task solved at iteration 50!
+2025-04-07 14:42:24,324 - __main__ - INFO - Task solved at iteration 51!
+2025-04-07 14:42:50,277 - __main__ - INFO - Task solved at iteration 52!
+2025-04-07 14:43:15,953 - __main__ - INFO - Task solved at iteration 53!
+2025-04-07 14:43:47,040 - __main__ - INFO - Task solved at iteration 54!
+2025-04-07 14:44:14,874 - __main__ - INFO - Task solved at iteration 55!
+2025-04-07 14:44:44,065 - __main__ - INFO - Task solved at iteration 56!
+2025-04-07 14:45:14,264 - __main__ - INFO - Task solved at iteration 57!
+2025-04-07 14:45:43,529 - __main__ - INFO - Task solved at iteration 58!
+2025-04-07 14:46:11,889 - __main__ - INFO - Task solved at iteration 59!
+2025-04-07 14:46:43,015 - __main__ - INFO - Iteration 60: Best=500.0, Avg=124.9
+2025-04-07 14:46:43,015 - __main__ - INFO - Task solved at iteration 60!
+2025-04-07 14:47:15,119 - __main__ - INFO - Task solved at iteration 61!
+2025-04-07 14:47:43,955 - __main__ - INFO - Task solved at iteration 62!
+2025-04-07 14:48:16,442 - __main__ - INFO - Task solved at iteration 63!
+2025-04-07 14:48:44,158 - __main__ - INFO - Task solved at iteration 64!
+2025-04-07 14:49:07,996 - __main__ - INFO - Task solved at iteration 65!
+2025-04-07 14:49:33,243 - __main__ - INFO - Task solved at iteration 66!
+2025-04-07 14:50:03,660 - __main__ - INFO - Task solved at iteration 67!
+2025-04-07 14:50:40,800 - __main__ - INFO - Task solved at iteration 68!
+2025-04-07 14:51:06,759 - __main__ - INFO - Task solved at iteration 69!
+2025-04-07 14:51:43,329 - __main__ - INFO - Iteration 70: Best=500.0, Avg=185.3
+2025-04-07 14:51:43,330 - __main__ - INFO - Task solved at iteration 70!
+2025-04-07 14:52:15,712 - __main__ - INFO - Task solved at iteration 71!
+2025-04-07 14:52:56,092 - __main__ - INFO - Task solved at iteration 72!
+2025-04-07 14:53:37,079 - __main__ - INFO - Task solved at iteration 73!
+2025-04-07 14:54:17,247 - __main__ - INFO - Task solved at iteration 74!
+2025-04-07 14:54:57,331 - __main__ - INFO - Task solved at iteration 75!
+2025-04-07 14:55:38,413 - __main__ - INFO - Task solved at iteration 76!
+2025-04-07 14:56:20,968 - __main__ - INFO - Task solved at iteration 77!
+2025-04-07 14:57:04,037 - __main__ - INFO - Task solved at iteration 78!
+2025-04-07 14:57:48,825 - __main__ - INFO - Task solved at iteration 79!
+2025-04-07 14:58:32,468 - __main__ - INFO - Iteration 80: Best=500.0, Avg=120.3
+2025-04-07 14:58:32,468 - __main__ - INFO - Task solved at iteration 80!
+2025-04-07 14:59:16,488 - __main__ - INFO - Task solved at iteration 81!
+2025-04-07 15:00:00,467 - __main__ - INFO - Task solved at iteration 82!
+2025-04-07 15:00:41,397 - __main__ - INFO - Task solved at iteration 83!
+2025-04-07 15:01:23,482 - __main__ - INFO - Task solved at iteration 84!
+2025-04-07 15:02:08,362 - __main__ - INFO - Task solved at iteration 85!
+2025-04-07 15:02:49,828 - __main__ - INFO - Task solved at iteration 86!
+2025-04-07 15:03:31,251 - __main__ - INFO - Task solved at iteration 87!
+2025-04-07 15:04:17,513 - __main__ - INFO - Task solved at iteration 88!
+2025-04-07 15:04:59,080 - __main__ - INFO - Task solved at iteration 89!
+2025-04-07 15:05:43,072 - __main__ - INFO - Iteration 90: Best=500.0, Avg=152.2
+2025-04-07 15:05:43,072 - __main__ - INFO - Task solved at iteration 90!
+2025-04-07 15:06:26,789 - __main__ - INFO - Task solved at iteration 91!
+2025-04-07 15:07:10,199 - __main__ - INFO - Task solved at iteration 92!
+2025-04-07 15:07:55,553 - __main__ - INFO - Task solved at iteration 93!
+2025-04-07 15:08:39,993 - __main__ - INFO - Task solved at iteration 94!
+2025-04-07 15:09:22,675 - __main__ - INFO - Task solved at iteration 95!
+2025-04-07 15:10:11,577 - __main__ - INFO - Task solved at iteration 96!
+2025-04-07 15:10:52,168 - __main__ - INFO - Task solved at iteration 97!
+2025-04-07 15:11:38,122 - __main__ - INFO - Task solved at iteration 98!
+2025-04-07 15:12:19,526 - __main__ - INFO - Task solved at iteration 99!
+2025-04-07 15:12:19,674 - __main__ - INFO - QD training completed.
+2025-04-07 15:12:23,824 - __main__ - INFO - Final archive stats:
+2025-04-07 15:12:23,825 - __main__ - INFO - Neuron 0: 0.36
+2025-04-07 15:12:23,825 - __main__ - INFO - Neuron 1: 0.31
+2025-04-07 15:12:23,825 - __main__ - INFO - Neuron 2: 0.34
+2025-04-07 15:12:23,826 - __main__ - INFO - Neuron 3: 0.31
+2025-04-07 15:12:23,826 - __main__ - INFO - Neuron 4: 0.31
+2025-04-07 15:12:23,826 - __main__ - INFO - Neuron 5: 0.36
+2025-04-07 15:12:23,826 - __main__ - INFO - Neuron 6: 0.26
+2025-04-07 15:12:23,827 - __main__ - INFO - Neuron 7: 0.26
+2025-04-07 15:12:23,827 - __main__ - INFO - Neuron 8: 0.32
+2025-04-07 15:12:23,827 - __main__ - INFO - Neuron 9: 0.34

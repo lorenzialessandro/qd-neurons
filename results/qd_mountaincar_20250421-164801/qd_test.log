@@ -1,0 +1,68 @@
+2025-04-21 16:48:01,607 - __main__ - INFO - Starting QD MountainCar Training
+2025-04-21 16:48:01,607 - __main__ - INFO - Configuration: {'seed': 5, 'nodes': [2, 8, 3], 'iterations': 500, 'threshold': -110, 'episodes': 10, 'n_teams': 15}
+2025-04-21 16:48:01,608 - __main__ - INFO - Initializing archives with random rules...
+2025-04-21 16:48:22,868 - __main__ - INFO - Archives initialized with random rules.
+2025-04-21 16:48:29,036 - __main__ - INFO - Iteration 0: Best=-200.0, Avg=-200.0, Exploration Rate=0.90
+2025-04-21 16:49:41,282 - __main__ - INFO - Iteration 10: Best=-154.4, Avg=-194.6, Exploration Rate=0.89
+2025-04-21 16:50:55,393 - __main__ - INFO - Iteration 20: Best=-155.9, Avg=-194.2, Exploration Rate=0.88
+2025-04-21 16:52:06,870 - __main__ - INFO - Iteration 30: Best=-135.8, Avg=-191.6, Exploration Rate=0.87
+2025-04-21 16:53:20,584 - __main__ - INFO - Iteration 40: Best=-139.5, Avg=-192.2, Exploration Rate=0.86
+2025-04-21 16:54:37,255 - __main__ - INFO - Iteration 50: Best=-138.8, Avg=-192.0, Exploration Rate=0.85
+2025-04-21 16:55:58,183 - __main__ - INFO - Iteration 60: Best=-137.6, Avg=-191.7, Exploration Rate=0.84
+2025-04-21 16:57:26,373 - __main__ - INFO - Iteration 70: Best=-136.2, Avg=-191.6, Exploration Rate=0.83
+2025-04-21 16:58:57,004 - __main__ - INFO - Iteration 80: Best=-135.0, Avg=-191.7, Exploration Rate=0.82
+2025-04-21 17:00:32,652 - __main__ - INFO - Iteration 90: Best=-134.7, Avg=-191.4, Exploration Rate=0.81
+2025-04-21 17:02:14,334 - __main__ - INFO - Iteration 100: Best=-137.9, Avg=-191.7, Exploration Rate=0.80
+2025-04-21 17:03:58,336 - __main__ - INFO - Iteration 110: Best=-138.4, Avg=-190.9, Exploration Rate=0.79
+2025-04-21 17:05:51,214 - __main__ - INFO - Iteration 120: Best=-134.4, Avg=-191.6, Exploration Rate=0.78
+2025-04-21 17:07:48,491 - __main__ - INFO - Iteration 130: Best=-135.5, Avg=-191.7, Exploration Rate=0.77
+2025-04-21 17:09:52,190 - __main__ - INFO - Iteration 140: Best=-139.8, Avg=-179.4, Exploration Rate=0.76
+2025-04-21 17:11:59,722 - __main__ - INFO - Iteration 150: Best=-136.6, Avg=-191.9, Exploration Rate=0.75
+2025-04-21 17:14:15,769 - __main__ - INFO - Iteration 160: Best=-140.4, Avg=-192.1, Exploration Rate=0.74
+2025-04-21 17:16:18,154 - __main__ - INFO - Iteration 170: Best=-119.2, Avg=-190.5, Exploration Rate=0.73
+2025-04-21 17:18:00,006 - __main__ - INFO - Iteration 180: Best=-119.6, Avg=-189.6, Exploration Rate=0.72
+2025-04-21 17:19:51,722 - __main__ - INFO - Iteration 190: Best=-121.3, Avg=-190.5, Exploration Rate=0.71
+2025-04-21 17:21:45,275 - __main__ - INFO - Iteration 200: Best=-130.5, Avg=-191.4, Exploration Rate=0.70
+2025-04-21 17:23:45,903 - __main__ - INFO - Iteration 210: Best=-122.2, Avg=-190.6, Exploration Rate=0.69
+2025-04-21 17:25:54,800 - __main__ - INFO - Iteration 220: Best=-124.4, Avg=-191.1, Exploration Rate=0.68
+2025-04-21 17:28:04,880 - __main__ - INFO - Iteration 230: Best=-121.0, Avg=-190.3, Exploration Rate=0.67
+2025-04-21 17:30:18,886 - __main__ - INFO - Iteration 240: Best=-129.1, Avg=-191.2, Exploration Rate=0.66
+2025-04-21 17:32:39,997 - __main__ - INFO - Iteration 250: Best=-121.8, Avg=-190.5, Exploration Rate=0.65
+2025-04-21 17:35:04,835 - __main__ - INFO - Iteration 260: Best=-121.9, Avg=-190.8, Exploration Rate=0.64
+2025-04-21 17:37:34,612 - __main__ - INFO - Iteration 270: Best=-121.8, Avg=-190.8, Exploration Rate=0.63
+2025-04-21 17:40:10,524 - __main__ - INFO - Iteration 280: Best=-122.4, Avg=-190.9, Exploration Rate=0.62
+2025-04-21 17:43:12,896 - __main__ - INFO - Iteration 290: Best=-123.5, Avg=-190.9, Exploration Rate=0.61
+2025-04-21 17:46:15,145 - __main__ - INFO - Iteration 300: Best=-123.3, Avg=-183.6, Exploration Rate=0.60
+2025-04-21 17:49:20,218 - __main__ - INFO - Iteration 310: Best=-124.3, Avg=-190.8, Exploration Rate=0.59
+2025-04-21 17:52:28,717 - __main__ - INFO - Iteration 320: Best=-121.8, Avg=-190.7, Exploration Rate=0.58
+2025-04-21 17:55:45,297 - __main__ - INFO - Iteration 330: Best=-122.4, Avg=-191.1, Exploration Rate=0.57
+2025-04-21 17:59:04,150 - __main__ - INFO - Iteration 340: Best=-119.5, Avg=-183.8, Exploration Rate=0.56
+2025-04-21 18:02:25,153 - __main__ - INFO - Iteration 350: Best=-124.1, Avg=-191.0, Exploration Rate=0.55
+2025-04-21 18:05:49,331 - __main__ - INFO - Iteration 360: Best=-124.0, Avg=-190.5, Exploration Rate=0.54
+2025-04-21 18:09:19,345 - __main__ - INFO - Iteration 370: Best=-125.3, Avg=-190.8, Exploration Rate=0.53
+2025-04-21 18:12:48,342 - __main__ - INFO - Iteration 380: Best=-126.3, Avg=-190.8, Exploration Rate=0.52
+2025-04-21 18:16:26,322 - __main__ - INFO - Iteration 390: Best=-124.1, Avg=-191.1, Exploration Rate=0.51
+2025-04-21 18:20:12,395 - __main__ - INFO - Iteration 400: Best=-124.0, Avg=-190.8, Exploration Rate=0.50
+2025-04-21 18:24:00,232 - __main__ - INFO - Iteration 410: Best=-125.5, Avg=-190.7, Exploration Rate=0.49
+2025-04-21 18:27:15,821 - __main__ - INFO - Iteration 420: Best=-120.8, Avg=-189.5, Exploration Rate=0.48
+2025-04-21 18:29:22,652 - __main__ - INFO - Iteration 430: Best=-122.6, Avg=-189.8, Exploration Rate=0.47
+2025-04-21 18:31:28,956 - __main__ - INFO - Iteration 440: Best=-123.7, Avg=-189.9, Exploration Rate=0.46
+2025-04-21 18:33:41,474 - __main__ - INFO - Iteration 450: Best=-124.3, Avg=-190.0, Exploration Rate=0.45
+2025-04-21 18:35:54,343 - __main__ - INFO - Iteration 460: Best=-122.2, Avg=-190.2, Exploration Rate=0.44
+2025-04-21 18:37:58,005 - __main__ - INFO - Iteration 470: Best=-121.7, Avg=-189.8, Exploration Rate=0.43
+2025-04-21 18:40:04,881 - __main__ - INFO - Iteration 480: Best=-121.9, Avg=-189.7, Exploration Rate=0.42
+2025-04-21 18:42:18,322 - __main__ - INFO - Iteration 490: Best=-122.8, Avg=-184.0, Exploration Rate=0.41
+2025-04-21 18:44:24,372 - __main__ - INFO - Neuron 0: 0.23555555555555555
+2025-04-21 18:44:24,372 - __main__ - INFO - Neuron 1: 0.08888888888888889
+2025-04-21 18:44:24,372 - __main__ - INFO - Neuron 2: 0.5555555555555556
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 3: 0.4888888888888889
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 4: 0.5777777777777777
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 5: 0.5511111111111111
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 6: 0.5733333333333334
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 7: 0.5777777777777777
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 8: 0.6044444444444445
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 9: 0.5644444444444444
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 10: 0.6888888888888889
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 11: 0.6755555555555556
+2025-04-21 18:44:24,373 - __main__ - INFO - Neuron 12: 0.7066666666666667
+2025-04-21 18:44:44,019 - __main__ - INFO - Best network did not solve the task.

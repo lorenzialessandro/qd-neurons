@@ -1,0 +1,8 @@
+2025-04-23 15:24:57,666 - __main__ - INFO - Starting QD mountaincar Training
+2025-04-23 15:24:57,667 - __main__ - INFO - Configuration: {'seed': 4, 'nodes': [2, 8, 3], 'iterations': 500, 'threshold': -110, 'episodes': 10, 'n_teams': 10, 'dims': [15, 15], 'ranges': [(0, 1), (0, 1)], 'sigma': 1.5, 'task': 'new-MountainCar-v0'}
+2025-04-23 15:24:57,668 - __main__ - INFO - Initializing archives with random rules...
+2025-04-23 15:24:57,668 - __main__ - INFO - Processing initialization batch 1-2 of 5
+2025-04-23 15:25:27,196 - __main__ - INFO - Processing initialization batch 3-4 of 5
+2025-04-23 15:25:57,111 - __main__ - INFO - Processing initialization batch 5-5 of 5
+2025-04-23 15:26:15,937 - __main__ - INFO - Archives initialized with random rules.
+2025-04-23 15:26:49,749 - __main__ - INFO - Iteration 0: Best=-164.6, Avg=-196.5

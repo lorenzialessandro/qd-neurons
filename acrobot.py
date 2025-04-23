@@ -8,7 +8,6 @@ from tqdm import tqdm
 from collections import defaultdict
 import matplotlib.pyplot as plt
 from datetime import datetime
-from copy import deepcopy
 import logging
 import wandb
 
@@ -21,7 +20,7 @@ from analysis import *
 
 # # Setup logging
 # timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-# output_dir = f"results/qd_new_mountaincar_{timestamp}"
+# output_dir = f"results/qd_acrobot_{timestamp}"
 # os.makedirs(output_dir, exist_ok=True)
 
 # logging.basicConfig(
@@ -35,8 +34,8 @@ from analysis import *
 # logger = logging.getLogger(__name__)
 
 def evaluate_team(network, n_episodes=10):
-    """Evaluate a network on MountainCar-v0"""
-    env = gym.make("MountainCar-v0")
+    """Evaluate a network on Acrobot"""
+    env = gym.make("Acrobot-v1")
     rewards = []
 
     for _ in range(n_episodes):
@@ -46,7 +45,7 @@ def evaluate_team(network, n_episodes=10):
         episode_reward = 0
 
         while not (done or truncated):
-            input = torch.tensor(state) #.double()
+            input = torch.tensor(state)
             output = network.forward(input)
             action = np.argmax(output.tolist())
 
@@ -69,24 +68,7 @@ def evaluate_team(network, n_episodes=10):
         'std_reward': std_reward,
         'rewards': rewards
     }
-    
-def create_nets(pop, config, n_teams=10):
-    nets = []
-    teams = []
-
-    # Create random teams of neurons
-    for _ in range(n_teams):
-        p = pop.copy()
-        random.shuffle(p)
-        teams.append(p)
-
-    # Create networks for each team with corresponding population
-    for team in teams:
-        net = NCHL(nodes=config["nodes"], population=team)
-        nets.append(net)
-
-    return nets
-
+         
 def evaluate_team_parallel(network_config):
     """Wrapper for parallel evaluation with error handling"""
     try:
@@ -105,7 +87,6 @@ def initialize_archives(archives, pop, config, n_samples=10):
     
     # Set up multiprocessing
     num_workers = multiprocessing.cpu_count()
-    num_workers = 1 #TESTING 
     pool = multiprocessing.Pool(processes=num_workers)
     
     # Generate multiple samples of random rules
@@ -118,7 +99,7 @@ def initialize_archives(archives, pop, config, n_samples=10):
         
         # Create networks and evaluate them
         networks = create_nets(pop, config, n_teams=config.get("n_teams", 5))
-        network_configs = [(net, 5) for net in networks]
+        network_configs = [(net, config.get("episodes", 5)) for net in networks]
         
         # Evaluate in parallel
         evaluation_results = pool.map(evaluate_team_parallel, network_configs)
@@ -171,7 +152,7 @@ def initialize_archives_safer(archives, pop, output_dir, config, logger, n_sampl
     logger.info("Initializing archives with random rules...")
     
     # Process in smaller batches to avoid memory issues
-    batch_size = 2
+    batch_size = 1
     for batch in range(0, n_samples, batch_size):
         end_batch = min(batch + batch_size, n_samples)
         logger.info(f"Processing initialization batch {batch+1}-{end_batch} of {n_samples}")
@@ -179,7 +160,6 @@ def initialize_archives_safer(archives, pop, output_dir, config, logger, n_sampl
         try:
             # Set up multiprocessing for this batch
             num_workers = min(multiprocessing.cpu_count(), 4)
-            num_workers = 1 #TESTING
             with multiprocessing.get_context("spawn").Pool(processes=num_workers) as pool:
                 # Generate samples for this batch
                 for _ in range(batch, end_batch):
@@ -249,7 +229,7 @@ def initialize_archives_safer(archives, pop, output_dir, config, logger, n_sampl
     logger.info("Archives initialized with random rules.")    
     return archives
 
-def create_balanced_teams(pop, config, rules, elites=None, n_teams=10):
+def create_balanced_teams(pop, config, elites=None, n_teams=10):
     """Create teams with a mix of elite and exploratory neurons"""
     nets = []
     
@@ -272,26 +252,35 @@ def create_balanced_teams(pop, config, rules, elites=None, n_teams=10):
     # Create remaining networks
     remaining = n_teams - len(nets)
     
-    # Create n_teams populations of neurons: for each team create a new population 
-    all_pops = []
-    for team in range(remaining):
-        team_pop = []
-        for neuron in pop:
-            neuron_id = neuron.neuron_id
-            rule = rules[neuron_id][team]
-            new_neuron = deepcopy(neuron)
-            new_neuron.set_params(rule)
-            team_pop.append(new_neuron)
-    
-        all_pops.append(team_pop)
-        
-    for pop in all_pops:
-        network = NCHL(nodes=config["nodes"], population=pop) 
-        nets.append(network)
+    # Create teams with random neurons
+    for _ in range(remaining):
+        team_neurons = pop.copy()
+        random.shuffle(team_neurons)
+        team_neurons = team_neurons[:len(pop)]  # Keep same number of neurons
+        net = NCHL(nodes=config["nodes"], population=team_neurons)
+        nets.append(net)
         
     # Store the neuron scores for next call
     create_balanced_teams.neuron_scores = neuron_scores
     
+    return nets
+    
+
+def create_nets(pop, config, n_teams=10):
+    nets = []
+    teams = []
+
+    # Create random teams of neurons
+    for _ in range(n_teams):
+        p = pop.copy()
+        random.shuffle(p)
+        teams.append(p)
+
+    # Create networks for each team with corresponding population
+    for team in teams:
+        net = NCHL(nodes=config["nodes"], population=team)
+        nets.append(net)
+
     return nets
 
 def run_qd_with_tweaks(config, timestamp=None):
@@ -304,7 +293,7 @@ def run_qd_with_tweaks(config, timestamp=None):
     # Setup logging and output directory
     if timestamp is None:
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    output_dir = f"results/qd_new_mountaincar_{timestamp}"
+    output_dir = f"results/qd_acrobot_{timestamp}"
     os.makedirs(output_dir, exist_ok=True)
 
     logging.basicConfig(
@@ -319,11 +308,11 @@ def run_qd_with_tweaks(config, timestamp=None):
     
     # Set up WandB
     wb = wandb.init(
-        project="qd-neurons",
+        project="qd-neurons-acrobot",
         config=config,
     )
 
-    logger.info("Starting QD mountaincar Training")
+    logger.info("Starting QD Acrobot Training")
     logger.info(f"Configuration: {config}")
     
     # Network topology
@@ -336,8 +325,8 @@ def run_qd_with_tweaks(config, timestamp=None):
     # Create archives for each neuron
     archives = {
         neuron.neuron_id: NeuronArchive(
-            dims=config["dims"], 
-            ranges = config["ranges"],
+            dims=config["dims"],   
+            ranges=config["ranges"],
             sigma=config["sigma"],
             seed=config["seed"] + neuron.neuron_id 
         ) for neuron in pop
@@ -353,30 +342,45 @@ def run_qd_with_tweaks(config, timestamp=None):
     
     # Main loop
     for iteration in tqdm(range(config["iterations"])):
-        # Apporach:
-        # for each neuron, ask its archive #n_teams rules
-        # these rules are used to create networks, neuron position is fixed but each network has different rules
+        exploration_rate = 0.2 + 0.7 * np.exp(-iteration / (config["iterations"] * 0.3))
         
-        rules = {}
+        # 1. Update neuron parameters
         for neuron in pop:
             archive = archives[neuron.neuron_id]
-            neuron_rules = []
-            for i in range(config["n_teams"]):
-                rule = archive.ask()
-                neuron_rules.append(rule)
             
-            rules[neuron.neuron_id] = neuron_rules
+            if random.random() < exploration_rate or archive.empty:
+                # Exploration: use emitter and take random solution
+                solution = archive.ask()
+            else:
+                # Exploitation: select good solution from archive
+                archive_data = archive.data()
+                fitnesses = archive_data["fitness"]
+                
+                # Adaptive power scaling that increases pressure over time
+                min_fitness = np.min(fitnesses)
+                shifted_fitnesses = fitnesses - min_fitness + 1e-10  # Small epsilon to avoid zeros
+                                
+                power = 1 + 3 * (iteration / config["iterations"])
+                probabilities = np.power(shifted_fitnesses, power)
+                probabilities = probabilities / np.sum(probabilities)
+                
+                selected_idx = np.random.choice(len(fitnesses), p=probabilities)
+                solution = archive_data["rule"][selected_idx]
             
-        networks = create_balanced_teams(pop, config, rules, elites=elite_teams, n_teams=config["n_teams"])
-            
-        # Evaluate networks in parallel
-        network_configs = [(network, config["episodes"]) for network in networks]
+            # Apply solution parameters to neuron
+            neuron.set_params(solution)
+        
+        # 2. Create networks using balanced team formation
+        n_teams = config.get("n_teams", 10)
+        networks = create_balanced_teams(pop, config, elites=elite_teams, n_teams=n_teams)
+        
+        # 3. Prepare network configs for evaluation
+        network_configs = [(net, config.get("episodes", 5)) for net in networks]
         
         # 4. IMPORTANT CHANGE: Create a new pool for each iteration with error handling
         try:
             # Use a limited number of workers and a timeout
             num_workers = min(multiprocessing.cpu_count(), 8)
-            num_workers = 1 #TESTING
             with multiprocessing.get_context("spawn").Pool(processes=num_workers) as pool:
                 evaluation_results = []
                 # Use map_async with a timeout
@@ -420,8 +424,7 @@ def run_qd_with_tweaks(config, timestamp=None):
             
             # Collect data for each neuron
             for neuron in net.all_neurons:
-                behavior, complexity = neuron.compute_descriptors()
-                # print(f"Neuron {neuron.neuron_id}: {behavior}, {complexity}")
+                behavior, complexity = neuron.compute_new_descriptor()
                 descriptors[neuron.neuron_id].append([behavior, complexity])
                 objectives[neuron.neuron_id].append(fitness)
         
@@ -447,7 +450,7 @@ def run_qd_with_tweaks(config, timestamp=None):
         
         # 6. Select elite teams for next iteration
         evaluation_results.sort(key=lambda x: x[1]['mean_reward'], reverse=True)
-        elite_teams = [net for net, _ in evaluation_results[:max(2, config["n_teams"]//10)]] # Keep top 20% of teams as elites
+        elite_teams = [net for net, _ in evaluation_results[:max(2, n_teams//10)]] # Keep top 20% of teams as elites
         
         # Record metrics for this iteration
         iteration_best = max(all_fitness)
@@ -458,29 +461,27 @@ def run_qd_with_tweaks(config, timestamp=None):
         
         # Log progress
         if iteration % 10 == 0:
-            logger.info(f"Iteration {iteration}: Best={iteration_best:.1f}, Avg={iteration_avg:.1f}")
+            logger.info(f"Iteration {iteration}: Best={iteration_best:.1f}, Avg={iteration_avg:.1f}, Exploration Rate={exploration_rate:.2f}")
         
         # Check for convergence
         if iteration_best >= config["threshold"]:
             logger.info(f"Task solved at iteration {iteration}!")
-            
+
         wb.log({
             "best_fitness": iteration_best,
             "avg_fitness": iteration_avg,
             "threshold": config["threshold"],
+            "exploration_rate": exploration_rate,
         })
-        
+    
     # Finish WandB run
     wb.finish()
-    
+
     # Plotting results
     plot_fitness_trends(best_fitness_history, avg_fitness_history, output_dir, config["threshold"])
     plot_heatmaps(pop, archives, output_dir)
-    # plot_params(pop, output_dir)
-    # plot_analysis(pop, archives, output_dir)
     
-    # log each archive stats
-    logger.info("Final archive stats:")
+    # Log each archive stats
     for neuron in pop:
         archive = archives[neuron.neuron_id]
         logger.info(f"Neuron {neuron.neuron_id}: {archive.coverage()}")
@@ -492,15 +493,11 @@ def run_qd_with_tweaks(config, timestamp=None):
     
     solving_result = evaluate_team(best_network, n_episodes=100)
     mean_reward = solving_result['mean_reward']
-    rewards = solving_result['rewards']
     
     if mean_reward >= config["threshold"]:
         logger.info("Best network solved the task!")
     else:
         logger.info("Best network did not solve the task.")
-        
-    # Plot rewards
-    plot_rewards(rewards, output_dir, config["threshold"])
     
     return {
         'best_fitness': best_fitness_history,
@@ -511,20 +508,18 @@ if __name__ == "__main__":
     import torch.multiprocessing as mp
     mp.set_start_method('spawn', force=True)
     
-    # Configuration
     config = {
-        "seed": 4,
-        "nodes": [2, 8, 3],  # Input, hidden, output layers
-        "iterations": 500,
-        "threshold": -110,
-        "episodes": 10,
-        "n_teams": 10,
-        "dims": [15, 15],   # 10x10 grid 
+        "seed": 9,
+        "nodes": [6, 8, 3],
+        "iterations": 100,
+        "threshold": -100,
+        "episodes": 15,
+        "n_teams": 15,
+        "dims": [10, 10],   
         "ranges": [(0, 1), (0, 1)],
-        "sigma": 1.5,
-        "task": "new-MountainCar-v0"
+        "sigma": 0.1,
+        "task": "Acrobot-v1",
     }
     
-    # Run QD training
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     run_qd_with_tweaks(config, timestamp=timestamp)

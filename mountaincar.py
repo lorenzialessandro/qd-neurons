@@ -555,12 +555,12 @@ if __name__ == "__main__":
     mp.set_start_method('spawn', force=True)
     
     config = {
-        "seed": 12,
+        "seed": 5,
         "nodes": [2, 8, 3],
         "iterations": 200,
         "threshold": -110,
-        "episodes": 15,
-        "n_teams": 15,
+        "episodes": 10,
+        "n_teams": 10,
         "dims": [15, 15],   
         "ranges": [(0, 1), (0, 1)],
         "sigma": 1,
