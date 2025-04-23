@@ -1,8 +1,0 @@
-seed: 3
-nodes: [4, 4, 2]
-episodes: 10
-iterations: 20
-n_teams: 5
-threshold: 475
-descriptor1: "Average Entropy of Activations"
-descriptor2: "Average Absolute Weight Change"

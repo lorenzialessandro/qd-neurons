@@ -10,3 +10,4 @@
 2025-04-23 14:48:32,426 - __main__ - INFO - Iteration 0: Best=-186.7, Avg=-198.7, Exploration Rate=0.90
 2025-04-23 15:02:19,635 - __main__ - INFO - Iteration 10: Best=-200.0, Avg=-200.0, Exploration Rate=0.79
 2025-04-23 15:23:40,719 - __main__ - INFO - Iteration 20: Best=-194.5, Avg=-197.6, Exploration Rate=0.70
+2025-04-23 15:52:15,292 - __main__ - INFO - Iteration 30: Best=-200.0, Avg=-200.0, Exploration Rate=0.62
