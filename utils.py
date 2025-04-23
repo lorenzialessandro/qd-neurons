@@ -101,10 +101,10 @@ def plot_heatmaps(pop, archives, path, suffix=None):
         archive = archives[neuron.neuron_id]
         plt.sca(axs[neuron.neuron_id])  # Set the current axis
         # grid_archive_heatmap(archive, cmap='Greens')
-        archive.visualize(ax=axs[neuron.neuron_id], cmap='Greens')
-        plt.xlabel('Temporal stability')
+        archive.visualize(ax=axs[neuron.neuron_id], cmap='magma')
+        plt.xlabel('Std Activations')
         #plt.ylabel('Signal complexity')
-        plt.ylabel('Eta')
+        plt.ylabel('Learning Rate')
         plt.title(f'Neuron {neuron.neuron_id}')
 
     plt.tight_layout()

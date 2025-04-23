@@ -245,7 +245,45 @@ class Neuron:
             avg_weight_change = 0.0
         
         return self.eta, avg_weight_change
-        return avg_entropy, avg_weight_change
+        return avg_entropy, 
+    
+    
+    def __getstate__(self):
+        """Return state values to be pickled."""
+        state = {}
+        # Store all attributes except tensors
+        for key, value in self.__dict__.items():
+            if isinstance(value, torch.Tensor):
+                # Convert tensors to lists for pickling
+                state[f"{key}_list"] = value.detach().cpu().tolist()
+            else:
+                state[key] = value
+        
+        # Handle special case for lists of tensors
+        if hasattr(self, 'activations') and self.activations:
+            state['activations'] = self.activations
+        
+        if hasattr(self, 'weight_changes') and self.weight_changes:
+            state['weight_changes'] = self.weight_changes
+        
+        return state
+
+    def __setstate__(self, state):
+        """Restore state from the unpickled state values."""
+        # Recreate the dictionary
+        self.__dict__ = {}
+        
+        # Process each key in the state
+        for key, value in state.items():
+            if key.endswith('_list'):
+                # Convert lists back to tensors
+                tensor_key = key[:-5]  # Remove '_list' suffix
+                self.__dict__[tensor_key] = torch.tensor(value, device="cpu")
+            else:
+                self.__dict__[key] = value
+        
+        # Ensure device is set
+        self.device = state.get('device', 'cpu')
 
 class NCHL(nn.Module):
     def __init__(self, nodes: list, params=None, population=None, grad=False, device="cpu", init=None):
@@ -472,3 +510,74 @@ class NCHL(nn.Module):
                 decorr=rules[2]
             )
             start += 3
+            
+    def __getstate__(self):
+        """Return state values to be pickled."""
+        state = {
+            'nodes': self.nodes.tolist() if isinstance(self.nodes, torch.Tensor) else self.nodes,
+            'nweights': self.nweights,
+            'grad': self.grad,
+            'device': 'cpu',  # Always serialize with CPU device
+            'nparams': self.nparams
+        }
+        
+        # Store neuron states
+        neurons_state = []
+        for layer in self.neurons:
+            layer_state = []
+            for neuron in layer:
+                # Get the neuron's state
+                neuron_state = neuron.__getstate__()
+                layer_state.append(neuron_state)
+            neurons_state.append(layer_state)
+        state['neurons_state'] = neurons_state
+        
+        # Store all neurons list (just their IDs for reconstruction)
+        all_neurons_ids = [neuron.neuron_id for neuron in self.all_neurons]
+        state['all_neurons_ids'] = all_neurons_ids
+        
+        # Store network weights rather than layer objects
+        weights = []
+        for layer in self.network:
+            weights.append(layer.weight.data.detach().cpu().tolist())
+        state['weights'] = weights
+        
+        return state
+
+    def __setstate__(self, state):
+        """Restore state from the unpickled state values."""
+        super(NCHL, self).__init__()
+        
+        # Restore basic attributes
+        self.nodes = torch.tensor(state['nodes'], device='cpu')
+        self.nweights = state['nweights']
+        self.grad = state['grad']
+        self.device = 'cpu'  # Start on CPU, can be moved later
+        self.nparams = state['nparams']
+        
+        # Reconstruct neurons
+        self.neurons = []
+        self.all_neurons = []
+        
+        # Recreate neurons using their stored states
+        for layer_state in state['neurons_state']:
+            layer_neurons = []
+            for neuron_state in layer_state:
+                neuron = Neuron(neuron_id=neuron_state['neuron_id'], device='cpu')
+                neuron.__setstate__(neuron_state)
+                layer_neurons.append(neuron)
+                self.all_neurons.append(neuron)
+            self.neurons.append(layer_neurons)
+        
+        # Reconstruct network layers
+        self.network = []
+        for i in range(len(self.nodes) - 1):
+            layer = nn.Linear(self.nodes[i], self.nodes[i + 1], bias=False)
+            layer.double()
+            layer.to('cpu')
+            weights = torch.tensor(state['weights'][i], device='cpu')
+            layer.weight = nn.Parameter(weights, requires_grad=self.grad)
+            self.network.append(layer)
+        
+        self.double()
+        self.to('cpu')  # Start on CPU

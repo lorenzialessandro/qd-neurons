@@ -160,7 +160,7 @@ class NeuronArchive:
         covered_cells = len(self.archive)
         return covered_cells / tot_cells 
         
-    def visualize(self, ax=None, cmap='Greens', transpose_measures=False, 
+    def visualize(self, ax=None, cmap='magma', transpose_measures=False, 
               aspect='auto', vmin=None, vmax=None, cbar=True, 
               cbar_kwargs=None, rasterized=False, pcm_kwargs=None):
         
@@ -204,7 +204,7 @@ class NeuronArchive:
         ax.set_aspect(aspect)
         
         # Set labels
-        ax.set_xlabel(f"Stability [{lower_bounds[0]}, {upper_bounds[0]}]")
+        ax.set_xlabel(f"Std Activations [{lower_bounds[0]}, {upper_bounds[0]}]")
         ax.set_ylabel(f"Learning Rate [{lower_bounds[1]}, {upper_bounds[1]}]")
         
         # Create the plot
